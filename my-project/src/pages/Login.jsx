@@ -4,12 +4,18 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import api from "../apis/api";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
 
 import {
   clearAuth,
   getStoredUser,
   isTokenExpired,
   MANAGER_ROLES,
+  ROLES,
   saveAuth,
 } from "../utils/auth";
 
@@ -18,7 +24,7 @@ function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   // ================= VALIDATION SCHEMA =================
   const loginValidationSchema = Yup.object({
     email: Yup.string()
@@ -38,8 +44,8 @@ function Login() {
       const user = getStoredUser();
 
       navigate(
-        user?.role === "employee"
-          ? "/dashboard/profile"
+        user?.role === ROLES.EMPLOYEE
+          ? "/dashboard/employee_home"
           : "/dashboard"
       );
     }
@@ -76,8 +82,8 @@ function Login() {
         if (MANAGER_ROLES.includes(user.role)) {
           navigate("/dashboard");
 
-        } else if (user.role === "employee") {
-          navigate("/dashboard/profile");
+        } else if (user.role === ROLES.EMPLOYEE) {
+          navigate("/dashboard/employee_home");
 
         } else {
           clearAuth();
@@ -152,35 +158,57 @@ function Login() {
           </div>
 
           {/* PASSWORD */}
-          <div className="flex flex-col">
+   {/* PASSWORD */}
+<div className="flex flex-col">
 
-            {/* <label className="mb-1 text-sm font-medium text-gray-700">
-              Password
-            </label> */}
+<TextField
+  fullWidth
+  type={showPassword ? "text" : "password"}
+  name="password"
+  placeholder="Enter your password"
+  value={formik.values.password}
+  onChange={formik.handleChange}
+  onBlur={formik.handleBlur}
+  error={
+    formik.touched.password &&
+    Boolean(formik.errors.password)
+  }
+  slotProps={{
+    input: {
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton
+            onClick={(e) => {
+              e.preventDefault();
+              setShowPassword((prev) => !prev);
+            }}
+          >
+            {showPassword ? (
+              <VisibilityOff />
+            ) : (
+              <Visibility />
+            )}
+          </IconButton>
+        </InputAdornment>
+      ),
+    },
+  }}
+  sx={{
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "12px",
+    },
+  }}
+/>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`${inputStyle} ${
-                formik.touched.password &&
-                formik.errors.password
-                  ? "border-red-500"
-                  : "border-gray-300"
-              }`}
-            />
+  {formik.touched.password &&
+    formik.errors.password && (
+      <p className="text-red-500 text-sm mt-1">
+        {formik.errors.password}
+      </p>
+    )}
 
-            {formik.touched.password &&
-              formik.errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {formik.errors.password}
-                </p>
-              )}
+</div>
 
-          </div>
 
           {/* ERROR MESSAGE */}
           {error && (

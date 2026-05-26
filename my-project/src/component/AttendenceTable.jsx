@@ -204,16 +204,16 @@ const formatTime = (value) => {
   return dayjs(value).format("hh:mm A");
 };
 
-  const getStatusColor = (value) => {
+  // const getStatusColor = (value) => {
 
-    if (value === "Present") return "success";
-    if (value === "Late") return "warning";
-    if (value === "Half Day") return "info";
-    if (value === "Leave") return "error";
-    if (value === "Completed") return "success";
+  //   if (value === "Present") return "success";
+  //   if (value === "Late") return "warning";
+  //   if (value === "Half Day") return "info";
+  //   if (value === "Leave") return "error";
+  //   if (value === "Completed") return "success";
 
-    return "default";
-  };
+  //   return "default";
+  // };
 
   if (!canView) {
     return (
@@ -444,7 +444,7 @@ const formatTime = (value) => {
                       {formatHours(row.total_hours)}
                     </TableCell>
 
-                    <TableCell>
+                    {/* <TableCell>
                       <Chip
                         label={row.status}
                         color={getStatusColor(row.status)}
@@ -454,7 +454,51 @@ const formatTime = (value) => {
                           borderRadius: "8px",
                         }}
                       />
-                    </TableCell>
+                    </TableCell> */}
+
+
+
+
+<TableCell>
+  <Chip
+    label={row.status}
+    size="small"
+    sx={{
+      fontWeight: 600,
+      borderRadius: "8px",
+
+      ...(row.status === "Completed" && {
+        backgroundColor: "#dcfce7", // light green
+        color: "#15803d", // dark green text
+      }),
+
+      ...(row.status === "Present" && {
+        backgroundColor: "#bbf7d0",
+        color: "#166534",
+      }),
+
+      ...(row.status === "Late" && {
+        backgroundColor: "#fef3c7",
+        color: "#92400e",
+      }),
+
+      ...(row.status === "Half Day" && {
+        backgroundColor: "#dbeafe",
+        color: "#1d4ed8",
+      }),
+
+      ...(row.status === "Leave" && {
+        backgroundColor: "#fee2e2",
+        color: "#b91c1c",
+      }),
+    }}
+  />
+</TableCell>
+
+
+
+
+
                   </TableRow>
                 ))}
 

@@ -20,6 +20,10 @@ export const ALL_ROLES = [
   ROLES.EMPLOYEE,
 ];
 
+
+// export const EMPLOYEE=
+//   ROLES.EMPLOYEE;
+
 export function formatRole(role = "") {
   return role
     .split("_")

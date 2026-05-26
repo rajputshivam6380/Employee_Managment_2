@@ -35,7 +35,8 @@ from app.service.attendence_service import (
     get_department_attendance,
     get_project_summary,
     get_organization_dashboard,
-    filter_attendence_admin_only
+    filter_attendence_admin_only,
+    get_employee_dashboard
 )
 attendence_router = APIRouter(
     prefix="/attendance",
@@ -306,4 +307,17 @@ def filter_attendence_admin_old_route(
         start_date=start_date,
         end_date=end_date,
         employee_id=employee_id
+    )
+
+
+@attendence_router.get("/employee_home")
+def employee_dashboard(
+    db:Session=Depends(get_db),
+    current_user=Depends(
+        get_current_user
+    )
+):
+    return get_employee_dashboard(
+        db,
+        current_user
     )

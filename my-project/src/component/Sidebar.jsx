@@ -97,6 +97,26 @@ console.log(user);
 
         )}
 
+
+
+
+
+
+         {role === ROLES.EMPLOYEE && (
+
+          <NavLink
+            to="/dashboard/employee_home"
+            className={navLinkClass}
+          >
+
+            <House size={20} />
+
+            {sidebarOpen && "Dashboard"}
+
+          </NavLink>
+
+        )}
+
         {role !== ROLES.EMPLOYEE && (
 
           <NavLink

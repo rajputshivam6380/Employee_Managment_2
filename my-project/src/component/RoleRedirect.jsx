@@ -18,7 +18,7 @@ export default function RoleRedirect() {
         break;
 
       case ROLES.EMPLOYEE:
-        navigate("/dashboard/attendance", { replace: true });
+        navigate("/dashboard/employee_home", { replace: true });
         break;
 
       default:

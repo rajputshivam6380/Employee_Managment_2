@@ -16,6 +16,10 @@ from app.models.attendance_model import Attendance
 from app.models.project_model import Project, StatusEnum
 
 from typing import Optional
+
+from sqlalchemy import cast
+
+from sqlalchemy.dialects.postgresql import JSONB
 # ==========================================
 # CHECK IN
 # ==========================================
@@ -858,3 +862,223 @@ def filter_attendence_admin_only(
         })
 
     return result
+
+
+
+
+
+def get_employee_dashboard(
+        db:Session,
+        current_user
+):
+    if current_user["role"]!="employee":
+        raise HTTPException(status_code=404,detail="Only employee can see this")
+    
+    employee_id=current_user["user_id"]
+
+    today=date.today()
+
+    month_start=today.replace(day=1)
+
+    analytics_start=min(
+        month_start,
+        today-timedelta(days=34)
+    )
+
+    employee=(
+        db.query(User).filter(User.id==employee_id,
+                              User.role==RoleEnum.EMPLOYEE)
+    ).first()
+
+    if not employee:
+        raise HTTPException(status_code=404,
+                            detail="Employee not found")
+    
+    attendance_record = (
+        db.query(Attendance)
+        .filter(
+            Attendance.employee_id == employee_id,
+            Attendance.attendance_date >= analytics_start
+        )
+        .all()
+    )
+
+    attended_statuses={
+        AttendanceStatus.present,
+        AttendanceStatus.late,
+        AttendanceStatus.half_day,
+        AttendanceStatus.leave,
+        AttendanceStatus.complete,
+        
+    }
+
+
+    today_record = next(
+        (
+            record
+            for record in attendance_record
+            if (
+                record.attendance_date == today
+                and record.status in attended_statuses
+            )
+        ),
+        None
+    )
+
+    today_attendance=(
+        100
+        if today_record
+        else 0
+    )
+
+
+    daily_attendance=[]
+
+    for index in range(6,-1,-1):
+        current_date=(
+            today-
+            timedelta(days=index)
+
+        )
+
+        record=next(
+            (
+                r
+                for r in attendance_record
+                if(
+                    r.attendance_date
+                    ==
+                    current_date
+                )
+            ),
+            None
+        )
+
+        daily_attendance.append({
+            "date":
+            current_date.isoformat(),
+            "present":(
+                1
+                if(
+                    record
+                    and record.status in attended_statuses
+                )
+                else 0
+            ),
+            "absent":(
+            0
+            if(
+                record
+                and record.status in attended_statuses
+            )
+            else 1
+         
+            )
+        })
+
+
+    weekly_attendance=[]
+
+    for index in range(4,-1,-1):
+        period_end=(
+            today-
+            timedelta(
+                days=index*7
+            )
+        )
+        period_start=(
+            period_end-
+            timedelta(days=6)
+        )
+
+        present_days = len([
+            record
+            for record in attendance_record
+            if (
+                period_start
+                <=
+                record.attendance_date
+                <=
+                period_end
+                and
+                record.status
+                in attended_statuses
+            )
+        ])
+
+        weekly_attendance.append({
+            "week":
+            (
+                f"{period_start.strftime('%d %b')}"
+                f" - "
+                f"{period_end.strftime('%d %b')}"
+            ),
+            "average":
+            round(
+                (
+                    present_days*100
+                )/7,2
+            )
+            if present_days else 0
+        })
+
+
+
+
+    projects=(
+        db.query(Project).
+        filter(
+            cast(
+            Project.assigned_to,
+            JSONB).contains(
+                [employee_id]
+            )
+        )
+        .all()
+        )
+    
+    project_summery={
+        "pending":0,
+        "in_progress":0,
+        "completed":0,
+        }
+    
+    for project in projects:
+        if project.status==StatusEnum.Pending:
+            project_summery["pending"]+=1
+
+        elif project.status==StatusEnum.InProgress:
+            project_summery["in_progress"]+=1
+
+        elif project.status==StatusEnum.Completed:
+            project_summery["completed"]+=1
+    return {
+
+        "cards": {
+
+            "employee_name":
+            employee.name,
+
+            "attendance_today":
+            today_attendance,
+
+            "assigned_projects":
+            len(projects),
+
+            "department":
+            (
+                employee.department.value
+                if employee.department
+                else None
+            ),
+        },
+
+        "daily_attendance":
+        daily_attendance,
+
+        "weekly_attendance":
+        weekly_attendance,
+
+        "project_summary":
+        project_summery,
+    }
