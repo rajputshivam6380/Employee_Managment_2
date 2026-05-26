@@ -318,7 +318,7 @@ const getAttendanceDotClass = (attendanceStatus) => {
   }
 
   if (normalizedStatus === "leave") {
-    return "bg-blue-500";
+    return "bg-red-300";
   }
 
   if (normalizedStatus === "completed"){

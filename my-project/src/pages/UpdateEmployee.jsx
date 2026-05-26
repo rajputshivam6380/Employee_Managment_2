@@ -320,12 +320,10 @@ await api.patch(
             {/* NAME */}
             <div className="flex flex-col relative">
 
-              <span className="absolute right-0 top-0 text-red-500 text-lg font-bold">
-                *
-              </span>
+           
 
               <label className="mb-1 text-sm font-medium text-gray-700">
-                Full Name
+                Full Name <span className="text-red-500">*</span>
               </label>
 
               <input
@@ -369,12 +367,10 @@ await api.patch(
             {/* EMAIL */}
             <div className="flex flex-col relative">
 
-              <span className="absolute right-0 top-0 text-red-500 text-lg font-bold">
-                *
-              </span>
+            
 
               <label className="mb-1 text-sm font-medium text-gray-700">
-                Email
+                Email<span className="text-red-500">*</span>
               </label>
 
               <input
@@ -468,12 +464,10 @@ await api.patch(
               {/* COUNTRY CODE */}
               <div className="w-32 flex flex-col relative">
 
-                <span className="absolute right-0 top-0 text-red-500 text-lg font-bold">
-                  *
-                </span>
+             
 
                 <label className="mb-1 text-sm font-medium text-gray-700">
-                  Code
+                  Code<span className="text-red-500">*</span>
                 </label>
 
                 <select
@@ -539,12 +533,10 @@ await api.patch(
               {/* PHONE */}
               <div className="flex-1 flex flex-col relative">
 
-                <span className="absolute right-0 top-0 text-red-500 text-lg font-bold">
-                  *
-                </span>
+              
 
                 <label className="mb-1 text-sm font-medium text-gray-700">
-                  Phone
+                  Phone<span className="text-red-500">*</span>
                 </label>
 
                 <input
@@ -604,12 +596,10 @@ await api.patch(
             {/* DEPARTMENT */}
             <div className="flex flex-col relative">
 
-              <span className="absolute right-0 top-0 text-red-500 text-lg font-bold">
-                *
-              </span>
+          
 
               <label className="mb-1 text-sm font-medium text-gray-700">
-                Department
+                Department<span className="text-red-500">*</span>
               </label>
 
               <select

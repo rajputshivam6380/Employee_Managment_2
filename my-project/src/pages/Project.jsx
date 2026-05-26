@@ -515,7 +515,7 @@ export default function AssignedProject() {
           <div className="flex flex-col">
 
             <label className="mb-2 text-sm font-medium text-gray-700">
-              Task Title
+              Task Title<span className="text-red-500">*</span>
             </label>
 
             <input
@@ -612,7 +612,7 @@ export default function AssignedProject() {
           <div className="flex flex-col w-full">
 
             <label className="mb-2 text-sm font-medium text-gray-700">
-              Select Employees
+              Select Employees<span className="text-red-500">*</span>
             </label>
 
             <div className="custom-multiselect">
@@ -700,7 +700,7 @@ export default function AssignedProject() {
      <div className="flex flex-col">
 
   <label className="mb-2 text-sm font-medium text-gray-700">
-    Deadline
+    Deadline<span className="text-red-500">*</span>
   </label>
 
   <LocalizationProvider dateAdapter={AdapterDayjs}>
