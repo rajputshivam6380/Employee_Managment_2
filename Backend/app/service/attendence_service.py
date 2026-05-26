@@ -1,14 +1,11 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from sqlalchemy import and_,or_, cast, String
+from sqlalchemy import and_, or_, cast, String
 from datetime import date, datetime, time, timedelta
 
 from app.models.user import User
 from app.models.enums import RoleEnum
-from app.models.attendance_model import (
-    Attendance,
-    AttendanceStatus
-)
+from app.models.attendance_model import Attendance, AttendanceStatus
 
 
 from app.models.attendance_model import Attendance
@@ -20,39 +17,36 @@ from typing import Optional
 from sqlalchemy import cast
 
 from sqlalchemy.dialects.postgresql import JSONB
+
+
 # ==========================================
 # CHECK IN
 # ==========================================
-def check_in_employee(
-    db: Session,
-    employee_id: int
-):
+def check_in_employee(db: Session, employee_id: int):
 
     # CHECK EMPLOYEE EXISTS
-    employee = db.query(User).filter(
-        User.id == employee_id
-    ).first()
+    employee = db.query(User).filter(User.id == employee_id).first()
 
     if not employee:
-        raise HTTPException(
-            status_code=404,
-            detail="Employee not found"
-        )
+        raise HTTPException(status_code=404, detail="Employee not found")
 
     today = date.today()
 
     # CHECK ALREADY CHECKED IN
-    existing_attendance = db.query(Attendance).filter(
-        and_(
-            Attendance.employee_id == employee_id,
-            Attendance.attendance_date == today
+    existing_attendance = (
+        db.query(Attendance)
+        .filter(
+            and_(
+                Attendance.employee_id == employee_id,
+                Attendance.attendance_date == today,
+            )
         )
-    ).first()
+        .first()
+    )
 
     if existing_attendance:
         raise HTTPException(
-            status_code=400,
-            detail="Attendance already marked for today"
+            status_code=400, detail="Attendance already marked for today"
         )
 
     current_time = datetime.now()
@@ -77,7 +71,6 @@ def check_in_employee(
     # if check_in_time <= time(10, 30):
     #     status = AttendanceStatus.present
 
-
     # elif check_in_time <= time(15,30):
     #     status= AttendanceStatus.half_day
 
@@ -86,7 +79,7 @@ def check_in_employee(
     # elif check_in_time >= (10,30):
     #     if check_in_time >= time(10,30) and check_in_time <= time(15,29):
     #         status= AttendanceStatus.half_day
-        
+
     # else:
     #     status = AttendanceStatus.absent
 
@@ -95,7 +88,7 @@ def check_in_employee(
         employee_id=employee_id,
         attendance_date=today,
         check_in=current_time,
-        status=status
+        status=status,
     )
 
     db.add(attendance)
@@ -107,35 +100,29 @@ def check_in_employee(
     return attendance
 
 
-
 # ==========================================
 # CHECK OUT
 # ==========================================
-def check_out_employee(
-    db: Session,
-    employee_id: int
-):
+def check_out_employee(db: Session, employee_id: int):
 
     today = date.today()
 
-    attendance = db.query(Attendance).filter(
-        and_(
-            Attendance.employee_id == employee_id,
-            Attendance.attendance_date == today
+    attendance = (
+        db.query(Attendance)
+        .filter(
+            and_(
+                Attendance.employee_id == employee_id,
+                Attendance.attendance_date == today,
+            )
         )
-    ).first()
+        .first()
+    )
 
     if not attendance:
-        raise HTTPException(
-            status_code=404,
-            detail="Check-in not found"
-        )
+        raise HTTPException(status_code=404, detail="Check-in not found")
 
     if attendance.check_out:
-        raise HTTPException(
-            status_code=400,
-            detail="Already checked out"
-        )
+        raise HTTPException(status_code=400, detail="Already checked out")
 
     current_time = datetime.now()
 
@@ -143,15 +130,9 @@ def check_out_employee(
 
     # ================= TOTAL HOURS =================
 
-    total_seconds = (
-        attendance.check_out -
-        attendance.check_in
-    ).total_seconds()
+    total_seconds = (attendance.check_out - attendance.check_in).total_seconds()
 
-    total_hours = round(
-        total_seconds / 3600,
-        2
-    )
+    total_hours = round(total_seconds / 3600, 2)
 
     attendance.total_hours = total_hours
 
@@ -191,16 +172,14 @@ def check_out_employee(
 # ==========================================
 # GET EMPLOYEE ATTENDANCE
 # ==========================================
-def get_employee_attendence(
-    db: Session,
-    employee_id: int
-):
+def get_employee_attendence(db: Session, employee_id: int):
 
-    attendance = db.query(Attendance).filter(
-        Attendance.employee_id == employee_id
-    ).order_by(
-        Attendance.attendance_date.desc()
-    ).all()
+    attendance = (
+        db.query(Attendance)
+        .filter(Attendance.employee_id == employee_id)
+        .order_by(Attendance.attendance_date.desc())
+        .all()
+    )
 
     return attendance
 
@@ -208,77 +187,54 @@ def get_employee_attendence(
 # ==========================================
 # GET ATTENDANCE BY DATE
 # ==========================================
-def get_attendence_by_date(
-    db: Session,
-    attendance_date: date
-):
+def get_attendence_by_date(db: Session, attendance_date: date):
 
-    attendence = db.query(Attendance).filter(
-        Attendance.attendance_date == attendance_date
-    ).all()
+    attendence = (
+        db.query(Attendance).filter(Attendance.attendance_date == attendance_date).all()
+    )
 
     if not attendence:
-        raise HTTPException(
-            status_code=404,
-            detail="Attendence not found"
-        )
+        raise HTTPException(status_code=404, detail="Attendence not found")
 
     return attendence
-
-
-
-
-
-
-
-
 
 
 # ==========================================
 # GET TODAY ATTENDANCE STATUS
 # ==========================================
-def get_today_attendance_status(
-    db: Session,
-    employee_id: int
-):
+def get_today_attendance_status(db: Session, employee_id: int):
 
     today = date.today()
 
-    attendance = db.query(Attendance).filter(
-        and_(
-            Attendance.employee_id == employee_id,
-            Attendance.attendance_date == today
+    attendance = (
+        db.query(Attendance)
+        .filter(
+            and_(
+                Attendance.employee_id == employee_id,
+                Attendance.attendance_date == today,
+            )
         )
-    ).first()
+        .first()
+    )
 
     # NO ATTENDANCE FOUND
 
     if not attendance:
 
-        return {
-            "checked_in": False,
-            "checked_out": False,
-            "attendance": None
-        }
+        return {"checked_in": False, "checked_out": False, "attendance": None}
 
     return {
-        "checked_in":
-            attendance.check_in is not None,
-
-        "checked_out":
-            attendance.check_out is not None,
-
+        "checked_in": attendance.check_in is not None,
+        "checked_out": attendance.check_out is not None,
         "attendance": {
             "id": attendance.id,
             "date": attendance.attendance_date,
             "check_in": attendance.check_in,
             "check_out": attendance.check_out,
             "status": attendance.status,
-            "total_hours": attendance.total_hours
-        }
+            "total_hours": attendance.total_hours,
+        },
     }
-
-
 
 
 def filter_attendence(
@@ -298,73 +254,41 @@ def filter_attendence(
     # EMPLOYEE => ONLY OWN DATA
     if role == "employee":
 
-        query = query.filter(
-            Attendance.employee_id ==
-            current_user["user_id"]
-        )
+        query = query.filter(Attendance.employee_id == current_user["user_id"])
 
     # ORGANIZATION ADMIN VIEWING EMPLOYEE
     elif role == "organization_admin" and employee_id:
 
-        query = query.filter(
-            Attendance.employee_id ==
-            employee_id
-        )
+        query = query.filter(Attendance.employee_id == employee_id)
 
     # SEARCH
     if search:
 
         from sqlalchemy import cast, String
 
-        query = query.filter(
-            cast(
-                Attendance.status,
-                String
-            ).ilike(f"%{search}%")
-        )
+        query = query.filter(cast(Attendance.status, String).ilike(f"%{search}%"))
 
     # STATUS FILTER
     if status:
 
-        query = query.filter(
-            Attendance.status == status
-        )
+        query = query.filter(Attendance.status == status)
 
     # DATE FILTER
     if start_date and end_date:
 
-        query = query.filter(
-            Attendance.attendance_date.between(
-                start_date,
-                end_date
-            )
-        )
+        query = query.filter(Attendance.attendance_date.between(start_date, end_date))
 
-    attendance = query.order_by(
-        Attendance.attendance_date.desc()
-    ).all()
+    attendance = query.order_by(Attendance.attendance_date.desc()).all()
 
     return attendance
 
 
-
-
-
-
-
-
-def get_all_attendance(
-    db: Session,
-    current_user
-):
+def get_all_attendance(db: Session, current_user):
 
     role = current_user["role"].lower()
 
     if role != "organization_admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Only admin can see all attendance"
-        )
+        raise HTTPException(status_code=403, detail="Only admin can see all attendance")
 
     attendance = (
         db.query(
@@ -373,17 +297,12 @@ def get_all_attendance(
             User.email,
             # User.profile_image
         )
-        .join(
-            User,
-            User.id == Attendance.employee_id
-        )
+        .join(User, User.id == Attendance.employee_id)
         # .filter(
         #     User.organization_id ==
         #     current_user["organization_id"]
         # )
-        .order_by(
-            Attendance.attendance_date.desc()
-        )
+        .order_by(Attendance.attendance_date.desc())
         .all()
     )
 
@@ -391,33 +310,22 @@ def get_all_attendance(
 
     for att, name, email in attendance:
 
-        result.append({
-            "id": att.id,
-            "employee_id": att.employee_id,
-            "employee_name": name,
-            "email": email,
-            # "photo": image,
-
-            "attendance_date":
-            att.attendance_date,
-
-            "check_in":
-            att.check_in,
-
-            "check_out":
-            att.check_out,
-
-            "total_hours":
-            att.total_hours,
-
-            "status":
-            att.status
-        })
+        result.append(
+            {
+                "id": att.id,
+                "employee_id": att.employee_id,
+                "employee_name": name,
+                "email": email,
+                # "photo": image,
+                "attendance_date": att.attendance_date,
+                "check_in": att.check_in,
+                "check_out": att.check_out,
+                "total_hours": att.total_hours,
+                "status": att.status,
+            }
+        )
 
     return result
-
-
-
 
 
 def get_daily_attendance(db: Session, days: int = 7):
@@ -434,10 +342,6 @@ def get_daily_attendance(db: Session, days: int = 7):
     """ % days
 
     return db.execute(query).mappings().all()
-
-
-
-
 
 
 def get_weekly_attendance(db: Session):
@@ -458,8 +362,6 @@ def get_weekly_attendance(db: Session):
     return db.execute(query).mappings().all()
 
 
-
-
 def get_monthly_attendance(db: Session):
 
     query = """
@@ -476,9 +378,6 @@ def get_monthly_attendance(db: Session):
     """
 
     return db.execute(query).mappings().all()
-
-
-
 
 
 def get_department_attendance(db: Session):
@@ -502,8 +401,6 @@ def get_department_attendance(db: Session):
     return db.execute(query).mappings().all()
 
 
-
-
 def get_project_summary(db: Session):
 
     query = """
@@ -518,34 +415,25 @@ def get_project_summary(db: Session):
     return db.execute(query).mappings().first()
 
 
-def get_organization_dashboard(
-    db: Session,
-    current_user
-):
+def get_organization_dashboard(db: Session, current_user):
 
     if current_user["role"] != "organization_admin":
         raise HTTPException(
-            status_code=403,
-            detail="Only organization admin can see dashboard"
+            status_code=403, detail="Only organization admin can see dashboard"
         )
 
     today = date.today()
     month_start = today.replace(day=1)
-    analytics_start = min(
-        month_start,
-        today - timedelta(days=34)
-    )
+    analytics_start = min(month_start, today - timedelta(days=34))
     admin_id = current_user["user_id"]
 
-    employees = db.query(User).filter(
-        User.role == RoleEnum.EMPLOYEE,
-        User.parent_id == admin_id
-    ).all()
+    employees = (
+        db.query(User)
+        .filter(User.role == RoleEnum.EMPLOYEE, User.parent_id == admin_id)
+        .all()
+    )
 
-    employee_ids = [
-        employee.id
-        for employee in employees
-    ]
+    employee_ids = [employee.id for employee in employees]
 
     total_employees = len(employees)
 
@@ -568,10 +456,14 @@ def get_organization_dashboard(
             },
         }
 
-    attendance_records = db.query(Attendance).filter(
-        Attendance.employee_id.in_(employee_ids),
-        Attendance.attendance_date >= analytics_start
-    ).all()
+    attendance_records = (
+        db.query(Attendance)
+        .filter(
+            Attendance.employee_id.in_(employee_ids),
+            Attendance.attendance_date >= analytics_start,
+        )
+        .all()
+    )
 
     attended_statuses = {
         AttendanceStatus.present,
@@ -584,16 +476,10 @@ def get_organization_dashboard(
     today_attended = {
         record.employee_id
         for record in attendance_records
-        if (
-            record.attendance_date == today
-            and record.status in attended_statuses
-        )
+        if (record.attendance_date == today and record.status in attended_statuses)
     }
 
-    daily_attendance_average = round(
-        (len(today_attended) * 100) / total_employees,
-        2
-    )
+    daily_attendance_average = round((len(today_attended) * 100) / total_employees, 2)
 
     daily_attendance = []
 
@@ -609,15 +495,14 @@ def get_organization_dashboard(
             )
         }
 
-        daily_attendance.append({
-            "date": current_date.isoformat(),
-            "present": len(attended_ids),
-            "absent": total_employees - len(attended_ids),
-            "average": round(
-                (len(attended_ids) * 100) / total_employees,
-                2
-            )
-        })
+        daily_attendance.append(
+            {
+                "date": current_date.isoformat(),
+                "present": len(attended_ids),
+                "absent": total_employees - len(attended_ids),
+                "average": round((len(attended_ids) * 100) / total_employees, 2),
+            }
+        )
 
     weekly_attendance = []
 
@@ -632,33 +517,29 @@ def get_organization_dashboard(
             and record.status in attended_statuses
         ]
 
-        working_days = (
-            period_end - period_start
-        ).days + 1
+        working_days = (period_end - period_start).days + 1
 
         possible_attendance = total_employees * working_days
 
-        weekly_attendance.append({
-            "week": f"{period_start.strftime('%d %b')} - {period_end.strftime('%d %b')}",
-            "average": round(
-                (len(period_records) * 100) / possible_attendance,
-                2
-            ) if possible_attendance else 0
-        })
+        weekly_attendance.append(
+            {
+                "week": f"{period_start.strftime('%d %b')} - {period_end.strftime('%d %b')}",
+                "average": (
+                    round((len(period_records) * 100) / possible_attendance, 2)
+                    if possible_attendance
+                    else 0
+                ),
+            }
+        )
 
     department_map = {}
 
     for employee in employees:
         department = (
-            employee.department.value
-            if employee.department
-            else "No Department"
+            employee.department.value if employee.department else "No Department"
         )
 
-        department_map.setdefault(
-            department,
-            []
-        ).append(employee.id)
+        department_map.setdefault(department, []).append(employee.id)
 
     days_elapsed = today.day
     monthly_department_average = []
@@ -675,10 +556,7 @@ def get_organization_dashboard(
             )
         ]
 
-        possible_monthly = (
-            len(department_employee_ids) *
-            days_elapsed
-        )
+        possible_monthly = len(department_employee_ids) * days_elapsed
 
         today_department_attended = {
             record.employee_id
@@ -686,28 +564,33 @@ def get_organization_dashboard(
             if record.attendance_date == today
         }
 
-        monthly_department_average.append({
-            "department": department,
-            "average": round(
-                (len(department_records) * 100) / possible_monthly,
-                2
-            ) if possible_monthly else 0
-        })
+        monthly_department_average.append(
+            {
+                "department": department,
+                "average": (
+                    round((len(department_records) * 100) / possible_monthly, 2)
+                    if possible_monthly
+                    else 0
+                ),
+            }
+        )
 
-        daily_department_average.append({
-            "department": department,
-            "average": round(
-                (
-                    len(today_department_attended) *
-                    100
-                ) / len(department_employee_ids),
-                2
-            ) if department_employee_ids else 0
-        })
+        daily_department_average.append(
+            {
+                "department": department,
+                "average": (
+                    round(
+                        (len(today_department_attended) * 100)
+                        / len(department_employee_ids),
+                        2,
+                    )
+                    if department_employee_ids
+                    else 0
+                ),
+            }
+        )
 
-    projects = db.query(Project).filter(
-        Project.created_by == admin_id
-    ).all()
+    projects = db.query(Project).filter(Project.created_by == admin_id).all()
 
     project_summary = {
         "pending": 0,
@@ -718,9 +601,7 @@ def get_organization_dashboard(
     assigned_project_count = 0
 
     for project in projects:
-        assigned_project_count += len(
-            project.assigned_to or []
-        )
+        assigned_project_count += len(project.assigned_to or [])
 
         if project.status == StatusEnum.Pending:
             project_summary["pending"] += 1
@@ -744,48 +625,32 @@ def get_organization_dashboard(
     }
 
 
-
-
 def filter_attendence_admin_only(
-    db:Session,
+    db: Session,
     current_user,
-    search:Optional[str]=None,
-    status:Optional[str]=None,
-    start_date:Optional[date]=None,
-    end_date:Optional[date]=None,
-    employee_id:Optional[int]=None,
-
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    employee_id: Optional[int] = None,
 ):
     role = current_user["role"].lower()
 
     if role != "organization_admin":
         raise HTTPException(
-            status_code=403,
-            detail='Only organization admin can access filter'
+            status_code=403, detail="Only organization admin can access filter"
         )
 
     admin_id = current_user["user_id"]
 
     query = (
-        db.query(
-            Attendance,
-            User.name,
-            User.email
-        )
-        .join(
-            User,
-            User.id == Attendance.employee_id
-        )
-        .filter(
-            User.role == RoleEnum.EMPLOYEE,
-            User.parent_id == admin_id
-        )
+        db.query(Attendance, User.name, User.email)
+        .join(User, User.id == Attendance.employee_id)
+        .filter(User.role == RoleEnum.EMPLOYEE, User.parent_id == admin_id)
     )
 
     if employee_id:
-        query = query.filter(
-            Attendance.employee_id == employee_id
-        )
+        query = query.filter(Attendance.employee_id == employee_id)
 
     if search:
         search_filter = f"%{search.strip()}%"
@@ -794,10 +659,7 @@ def filter_attendence_admin_only(
             or_(
                 User.name.ilike(search_filter),
                 User.email.ilike(search_filter),
-                cast(
-                    Attendance.status,
-                    String
-                ).ilike(search_filter),
+                cast(Attendance.status, String).ilike(search_filter),
             )
         )
 
@@ -819,304 +681,182 @@ def filter_attendence_admin_only(
             "Absent": AttendanceStatus.absent,
         }
 
-        query = query.filter(
-            Attendance.status ==
-            status_map.get(status, status)
-        )
+        query = query.filter(Attendance.status == status_map.get(status, status))
 
     if start_date and end_date:
-        query = query.filter(
-            Attendance.attendance_date.between(
-                start_date,
-                end_date
-            )
-        )
+        query = query.filter(Attendance.attendance_date.between(start_date, end_date))
 
     elif start_date:
-        query = query.filter(
-            Attendance.attendance_date >= start_date
-        )
+        query = query.filter(Attendance.attendance_date >= start_date)
 
     elif end_date:
-        query = query.filter(
-            Attendance.attendance_date <= end_date
-        )
+        query = query.filter(Attendance.attendance_date <= end_date)
 
-    rows = query.order_by(
-        Attendance.attendance_date.desc()
-    ).all()
+    rows = query.order_by(Attendance.attendance_date.desc()).all()
 
     result = []
 
     for attendance, name, email in rows:
-        result.append({
-            "id": attendance.id,
-            "employee_id": attendance.employee_id,
-            "employee_name": name,
-            "email": email,
-            "attendance_date": attendance.attendance_date,
-            "check_in": attendance.check_in,
-            "check_out": attendance.check_out,
-            "total_hours": attendance.total_hours,
-            "status": attendance.status.value,
-        })
+        result.append(
+            {
+                "id": attendance.id,
+                "employee_id": attendance.employee_id,
+                "employee_name": name,
+                "email": email,
+                "attendance_date": attendance.attendance_date,
+                "check_in": attendance.check_in,
+                "check_out": attendance.check_out,
+                "total_hours": attendance.total_hours,
+                "status": attendance.status.value,
+            }
+        )
 
     return result
 
 
+def get_employee_dashboard(db: Session, current_user):
+    if current_user["role"] != "employee":
+        raise HTTPException(status_code=404, detail="Only employee can see this")
 
+    employee_id = current_user["user_id"]
 
+    today = date.today()
 
-def get_employee_dashboard(
-        db:Session,
-        current_user
-):
-    if current_user["role"]!="employee":
-        raise HTTPException(status_code=404,detail="Only employee can see this")
-    
-    employee_id=current_user["user_id"]
+    month_start = today.replace(day=1)
 
-    today=date.today()
+    analytics_start = min(month_start, today - timedelta(days=34))
 
-    month_start=today.replace(day=1)
-
-    analytics_start=min(
-        month_start,
-        today-timedelta(days=34)
-    )
-
-    employee=(
-        db.query(User).filter(User.id==employee_id,
-                              User.role==RoleEnum.EMPLOYEE)
+    employee = (
+        db.query(User).filter(User.id == employee_id, User.role == RoleEnum.EMPLOYEE)
     ).first()
 
     if not employee:
-        raise HTTPException(status_code=404,
-                            detail="Employee not found")
-    
+        raise HTTPException(status_code=404, detail="Employee not found")
+
     attendance_record = (
         db.query(Attendance)
         .filter(
             Attendance.employee_id == employee_id,
-            Attendance.attendance_date >= analytics_start
+            Attendance.attendance_date >= analytics_start,
         )
         .all()
     )
 
-    attended_statuses={
+    attended_statuses = {
         AttendanceStatus.present,
         AttendanceStatus.late,
         AttendanceStatus.half_day,
         AttendanceStatus.leave,
         AttendanceStatus.complete,
-        
     }
-
 
     today_record = next(
         (
             record
             for record in attendance_record
-            if (
-                record.attendance_date == today
-                and record.status in attended_statuses
-            )
+            if (record.attendance_date == today and record.status in attended_statuses)
         ),
-        None
+        None,
     )
 
-    today_attendance=(
-        100
-        if today_record
-        else 0
-    )
+    today_attendance = 100 if today_record else 0
 
+    daily_attendance = []
 
-    daily_attendance=[]
+    for index in range(6, -1, -1):
+        current_date = today - timedelta(days=index)
 
-    for index in range(6,-1,-1):
-        current_date=(
-            today-
-            timedelta(days=index)
-
+        record = next(
+            (r for r in attendance_record if (r.attendance_date == current_date)), None
         )
 
-        record=next(
-            (
-                r
-                for r in attendance_record
-                if(
-                    r.attendance_date
-                    ==
-                    current_date
-                )
-            ),
-            None
+        daily_attendance.append(
+            {
+                "date": current_date.isoformat(),
+                "present": (
+                    1 if (record and record.status in attended_statuses) else 0
+                ),
+                "absent": (0 if (record and record.status in attended_statuses) else 1),
+            }
         )
 
-        daily_attendance.append({
-            "date":
-            current_date.isoformat(),
-            "present":(
-                1
-                if(
-                    record
+    weekly_attendance = []
+
+    for index in range(4, -1, -1):
+        period_end = today - timedelta(days=index * 7)
+        period_start = period_end - timedelta(days=6)
+
+        present_days = len(
+            [
+                record
+                for record in attendance_record
+                if (
+                    period_start <= record.attendance_date <= period_end
                     and record.status in attended_statuses
                 )
-                else 0
-            ),
-            "absent":(
-            0
-            if(
-                record
-                and record.status in attended_statuses
-            )
-            else 1
-         
-            )
-        })
-
-
-    weekly_attendance=[]
-
-    for index in range(4,-1,-1):
-        period_end=(
-            today-
-            timedelta(
-                days=index*7
-            )
-        )
-        period_start=(
-            period_end-
-            timedelta(days=6)
+            ]
         )
 
-        present_days = len([
-            record
-            for record in attendance_record
-            if (
-                period_start
-                <=
-                record.attendance_date
-                <=
-                period_end
-                and
-                record.status
-                in attended_statuses
-            )
-        ])
-
-        weekly_attendance.append({
-            "week":
-            (
-                f"{period_start.strftime('%d %b')}"
-                f" - "
-                f"{period_end.strftime('%d %b')}"
-            ),
-            "average":
-            round(
-                (
-                    present_days*100
-                )/7,2
-            )
-            if present_days else 0
-        })
-
-    monthly_attendence=[]
-
-    days_elapsed=today.day
-
-    for day in range(1, days_elapsed+1):
-        current_date = month_start.replace(
-            day=day
+        weekly_attendance.append(
+            {
+                "week": (
+                    f"{period_start.strftime('%d %b')}"
+                    f" - "
+                    f"{period_end.strftime('%d %b')}"
+                ),
+                "average": round((present_days * 100) / 7, 2) if present_days else 0,
+            }
         )
+
+    monthly_attendence = []
+
+    days_elapsed = today.day
+
+    for day in range(1, days_elapsed + 1):
+        current_date = month_start.replace(day=day)
         record = next(
-            (
-                r
-                for r in attendance_record
-                if(
-                    r.attendance_date
-                    ==
-                    current_date
-                )
+            (r for r in attendance_record if (r.attendance_date == current_date)), None
+        )
+
+    monthly_attendence.append(
+        {
+            "date": current_date.isoformat(),
+            "attendance": (
+                100 if (record and record.status in attended_statuses) else 0
             ),
-            None
-        )
-
-    monthly_attendence.append({
-        "date":
-    current_date.isoformat(),
-
-    "attendance":
-    (
-        100
-        if(
-            record
-            and
-            record.status
-            in attended_statuses
-        )
-        else 0
-    )
-    })
-
-    projects=(
-        db.query(Project).
-        filter(
-            cast(
-            Project.assigned_to,
-            JSONB).contains(
-                [employee_id]
-            )
-        )
-        .all()
-        )
-    
-    project_summery={
-        "pending":0,
-        "in_progress":0,
-        "completed":0,
         }
-    
+    )
+
+    projects = (
+        db.query(Project)
+        .filter(cast(Project.assigned_to, JSONB).contains([employee_id]))
+        .all()
+    )
+
+    project_summery = {
+        "pending": 0,
+        "in_progress": 0,
+        "completed": 0,
+    }
+
     for project in projects:
-        if project.status==StatusEnum.Pending:
-            project_summery["pending"]+=1
+        if project.status == StatusEnum.Pending:
+            project_summery["pending"] += 1
 
-        elif project.status==StatusEnum.InProgress:
-            project_summery["in_progress"]+=1
+        elif project.status == StatusEnum.InProgress:
+            project_summery["in_progress"] += 1
 
-        elif project.status==StatusEnum.Completed:
-            project_summery["completed"]+=1
+        elif project.status == StatusEnum.Completed:
+            project_summery["completed"] += 1
     return {
-
         "cards": {
-
-            "employee_name":
-            employee.name,
-
-            "attendance_today":
-            today_attendance,
-
-            "assigned_projects":
-            len(projects),
-
-            "department":
-            (
-                employee.department.value
-                if employee.department
-                else None
-            ),
+            "employee_name": employee.name,
+            "attendance_today": today_attendance,
+            "assigned_projects": len(projects),
+            "department": (employee.department.value if employee.department else None),
         },
-
-        "daily_attendance":
-        daily_attendance,
-
-        "weekly_attendance":
-        weekly_attendance,
-
-        "monthly_attendence":
-        monthly_attendence,
-
-        "project_summary":
-        project_summery,
+        "daily_attendance": daily_attendance,
+        "weekly_attendance": weekly_attendance,
+        "monthly_attendence": monthly_attendence,
+        "project_summary": project_summery,
     }

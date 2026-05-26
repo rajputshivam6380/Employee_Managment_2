@@ -1,20 +1,10 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Date,
-    DateTime,
-    ForeignKey,
-    Text,
-    Enum
-)
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Text, Enum
 
 import enum
 
 from sqlalchemy.sql import func
 from app.database import Base
 from sqlalchemy.orm import relationship
-
 
 
 # Leave Type Enum
@@ -32,22 +22,16 @@ class LeaveStatus(str, enum.Enum):
     rejected = "Rejected"
 
 
-
 class Leave(Base):
     __tablename__ = "leaves"
 
     id = Column(Integer, primary_key=True, index=True)
 
     employee_id = Column(
-        Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
-    leave_type = Column(
-        Enum(LeaveType),
-        nullable=False
-    )
+    leave_type = Column(Enum(LeaveType), nullable=False)
 
     reason = Column(Text, nullable=True)
 
@@ -56,37 +40,20 @@ class Leave(Base):
 
     total_days = Column(Integer, nullable=False)
 
-    status = Column(
-        Enum(LeaveStatus),
-        default=LeaveStatus.pending,
-        nullable=False
-    )
+    status = Column(Enum(LeaveStatus), default=LeaveStatus.pending, nullable=False)
 
     approved_by = Column(
-        Integer,
-        ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=True
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
 
-    created_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now()
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now()
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    employee = relationship(
-    "User",
-    foreign_keys=[employee_id],
-    back_populates="leaves"
-)
+    employee = relationship("User", foreign_keys=[employee_id], back_populates="leaves")
 
     approver = relationship(
-    "User",
-    foreign_keys=[approved_by],
-    back_populates="approved_leaves"
-)
+        "User", foreign_keys=[approved_by], back_populates="approved_leaves"
+    )

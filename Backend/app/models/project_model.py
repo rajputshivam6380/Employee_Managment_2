@@ -1,13 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    ForeignKey,
-    Text,
-    Date,
-    Enum,
-    JSON
-)
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, Enum, JSON
 
 import enum
 
@@ -34,68 +25,32 @@ class Project(Base):
 
     __tablename__ = "projects"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
+    id = Column(Integer, primary_key=True, index=True)
 
-    title = Column(
-        String(255),
-        nullable=False
-    )
+    title = Column(String(255), nullable=False)
 
-    description = Column(
-        Text,
-        nullable=True
-    )
+    description = Column(Text, nullable=True)
 
-    created_at = Column(
-        Date,
-        default=func.now()
-    )
+    created_at = Column(Date, default=func.now())
 
-    deadline = Column(
-        Date,
-        nullable=False
-    )
+    deadline = Column(Date, nullable=False)
 
     # STORE MULTIPLE IDS
-    assigned_to = Column(
-        JSON,
-        nullable=False
-    )
+    assigned_to = Column(JSON, nullable=False)
 
-    created_by = Column(
-        Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
-    )
+    created_by = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     priority = Column(
-        Enum(
-            PriorityEnum,
-            name="priority_enum"
-        ),
+        Enum(PriorityEnum, name="priority_enum"),
         default=PriorityEnum.Medium,
-        nullable=False
+        nullable=False,
     )
 
     status = Column(
-        Enum(
-            StatusEnum,
-            name="status_enum"
-        ),
-        default=StatusEnum.Pending,
-        nullable=False
+        Enum(StatusEnum, name="status_enum"), default=StatusEnum.Pending, nullable=False
     )
 
-    file_path=Column(
-        String,
-        nullable=True
-        )
+    file_path = Column(String, nullable=True)
 
     # ONLY THIS RELATIONSHIP WILL WORK
-    creator = relationship(
-        "User",
-        foreign_keys=[created_by]
-    )
+    creator = relationship("User", foreign_keys=[created_by])

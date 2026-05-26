@@ -9,14 +9,11 @@ from app.models.user import User
 
 from app.models.enums import RoleEnum
 
-from app.schemas.user_schema import (
-    UserCreate,
-    UserUpdate
-)
+from app.schemas.user_schema import UserCreate, UserUpdate
 
-from app.models.attendance_model import Attendance,AttendanceStatus
+from app.models.attendance_model import Attendance, AttendanceStatus
 
-from datetime import datetime,date
+from datetime import datetime, date
 
 from sqlalchemy import and_
 
@@ -33,14 +30,10 @@ from sqlalchemy import or_
 
 from app.auth.utils import hash_password
 
-
 # ================= CREATE USER =================
 
-async def create_user(
-    db: Session,
-    user_data: UserCreate,
-    current_user
-):
+
+async def create_user(db: Session, user_data: UserCreate, current_user):
 
     current_role = current_user["role"]
 
@@ -48,23 +41,15 @@ async def create_user(
 
     if current_role == RoleEnum.EMPLOYEE:
 
-        raise HTTPException(
-            status_code=403,
-            detail="Employees cannot create users"
-        )
+        raise HTTPException(status_code=403, detail="Employees cannot create users")
 
     # ================= EMAIL CHECK =================
 
-    existing_user = db.query(User).filter(
-        User.email == user_data.email
-    ).first()
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
 
     if existing_user:
 
-        raise HTTPException(
-            status_code=400,
-            detail="Email already exists"
-        )
+        raise HTTPException(status_code=400, detail="Email already exists")
 
     # ================= ROLE ACCESS =================
 
@@ -75,19 +60,14 @@ async def create_user(
     ):
 
         raise HTTPException(
-            status_code=403,
-            detail="Only super admin can create organization admin"
+            status_code=403, detail="Only super admin can create organization admin"
         )
 
     # HR MANAGER CAN CREATE ONLY EMPLOYEE
-    if (
-        current_role == RoleEnum.HR_MANAGER
-        and user_data.role != RoleEnum.EMPLOYEE
-    ):
+    if current_role == RoleEnum.HR_MANAGER and user_data.role != RoleEnum.EMPLOYEE:
 
         raise HTTPException(
-            status_code=403,
-            detail="HR manager can create only employees"
+            status_code=403, detail="HR manager can create only employees"
         )
 
     # DEPARTMENT ADMIN CAN CREATE ONLY EMPLOYEE
@@ -97,26 +77,21 @@ async def create_user(
     ):
 
         raise HTTPException(
-            status_code=403,
-            detail="Department admin can create only employees"
+            status_code=403, detail="Department admin can create only employees"
         )
 
     # ================= SUPER ADMIN CHECK =================
 
     if user_data.role == RoleEnum.SUPER_ADMIN:
 
-        existing_super_admin = db.query(User).filter(
-            User.role == RoleEnum.SUPER_ADMIN
-        ).first()
+        existing_super_admin = (
+            db.query(User).filter(User.role == RoleEnum.SUPER_ADMIN).first()
+        )
 
         if existing_super_admin:
 
-            raise HTTPException(
-                status_code=400,
-                detail="Super admin already exists"
-            )
+            raise HTTPException(status_code=400, detail="Super admin already exists")
 
-   
     # ================= PARENT ID =================
 
     if current_role == RoleEnum.SUPER_ADMIN:
@@ -143,45 +118,34 @@ async def create_user(
 
     if user_data.role == RoleEnum.DEPARTMENT_ADMIN:
 
-        existing_department_admin = db.query(User).filter(
-
-            User.role == RoleEnum.DEPARTMENT_ADMIN,
-
-            User.department == user_data.department,
-
-
-        ).first()
+        existing_department_admin = (
+            db.query(User)
+            .filter(
+                User.role == RoleEnum.DEPARTMENT_ADMIN,
+                User.department == user_data.department,
+            )
+            .first()
+        )
 
         if existing_department_admin:
 
             raise HTTPException(
-                status_code=400,
-                detail="Department admin already exists"
+                status_code=400, detail="Department admin already exists"
             )
 
-    hashed_password = hash_password(
-    user_data.password
-)
+    hashed_password = hash_password(user_data.password)
     # ================= CREATE USER =================
 
     user = User(
-
         name=user_data.name,
-
         email=user_data.email,
-
         password=hashed_password,
         # hash_password(user_data.password),
-
         phone=user_data.phone,
-
         role=user_data.role,
         country_code=user_data.country_code,
-
         department=user_data.department,
-
-
-        parent_id=parent_id
+        parent_id=parent_id,
     )
 
     db.add(user)
@@ -195,18 +159,14 @@ async def create_user(
 
 # ================= GET ALL USERS =================
 
-def build_user_attendance_response(
-    user,
-    db: Session,
-    today
-):
 
-    today_attendance = db.query(
-        Attendance
-    ).filter(
-        Attendance.employee_id == user.id,
-        Attendance.attendance_date == today
-    ).first()
+def build_user_attendance_response(user, db: Session, today):
+
+    today_attendance = (
+        db.query(Attendance)
+        .filter(Attendance.employee_id == user.id, Attendance.attendance_date == today)
+        .first()
+    )
 
     attendance_status = "Absent"
     checked_out = False
@@ -214,17 +174,11 @@ def build_user_attendance_response(
 
     if today_attendance:
 
-        attendance_status = (
-            today_attendance.status.value
-        )
+        attendance_status = today_attendance.status.value
 
-        checked_out = (
-            today_attendance.check_out is not None
-        )
+        checked_out = today_attendance.check_out is not None
 
-        is_present_today = (
-            today_attendance.check_in is not None
-        )
+        is_present_today = today_attendance.check_in is not None
 
     return {
         "id": user.id,
@@ -239,97 +193,81 @@ def build_user_attendance_response(
         "parent_id": user.parent_id,
         "is_present_today": is_present_today,
         "attendance_status": attendance_status,
-        "checked_out": checked_out
+        "checked_out": checked_out,
     }
 
 
-def get_all_users(
-    db: Session,
-    current_user
-):
+def get_all_users(db: Session, current_user):
 
     current_role = current_user["role"]
 
-
-    today=date.today()
+    today = date.today()
 
     # SUPER ADMIN
     if current_role == RoleEnum.SUPER_ADMIN:
 
-        users= db.query(User).filter(
-    User.role == RoleEnum.EMPLOYEE
-).all()
+        users = db.query(User).filter(User.role == RoleEnum.EMPLOYEE).all()
 
     # ORGANIZATION ADMIN
     elif current_role == RoleEnum.ORGANIZATION_ADMIN:
 
-        users= db.query(User).filter(
-    User.parent_id == current_user["user_id"],
-    User.role == RoleEnum.EMPLOYEE
-).all()
+        users = (
+            db.query(User)
+            .filter(
+                User.parent_id == current_user["user_id"],
+                User.role == RoleEnum.EMPLOYEE,
+            )
+            .all()
+        )
 
     # HR MANAGER
     elif current_role == RoleEnum.HR_MANAGER:
 
-       users= db.query(User).filter(
-    # User.organization_name ==
-    # current_user["organization_name"],
-    User.role == RoleEnum.EMPLOYEE
-).all()
+        users = (
+            db.query(User)
+            .filter(
+                # User.organization_name ==
+                # current_user["organization_name"],
+                User.role
+                == RoleEnum.EMPLOYEE
+            )
+            .all()
+        )
 
     # DEPARTMENT ADMIN
     elif current_role == RoleEnum.DEPARTMENT_ADMIN:
 
-        users= db.query(User).filter(
-        # User.organization_name ==
-        # current_user["organization_name"],
-
-        User.department ==
-        current_user["department"],
-
-        User.role == RoleEnum.EMPLOYEE
-    ).all()
+        users = (
+            db.query(User)
+            .filter(
+                # User.organization_name ==
+                # current_user["organization_name"],
+                User.department == current_user["department"],
+                User.role == RoleEnum.EMPLOYEE,
+            )
+            .all()
+        )
     # EMPLOYEE
     elif current_role == RoleEnum.EMPLOYEE:
 
-        users= db.query(User).filter(
-            User.id == current_user["user_id"]
-        ).all()
-
-
+        users = db.query(User).filter(User.id == current_user["user_id"]).all()
 
     else:
-        raise HTTPException(
-        status_code=403,
-        detail="Unauthorized"
-    )
+        raise HTTPException(status_code=403, detail="Unauthorized")
 
-    return [
-        build_user_attendance_response(
-            user,
-            db,
-            today
-        )
-        for user in users
-    ]
+    return [build_user_attendance_response(user, db, today) for user in users]
+
+
 # ================= GET USER BY ID =================
 
-def get_user_by_id(
-    user_id: int,
-    db: Session,
-    current_user
-):
 
-    user = db.query(User).filter(
-        User.id == user_id
-    ).first()
+def get_user_by_id(user_id: int, db: Session, current_user):
+
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
 
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
+        raise HTTPException(status_code=404, detail="User not found")
 
     current_role = current_user["role"]
 
@@ -342,10 +280,7 @@ def get_user_by_id(
     elif current_role == RoleEnum.ORGANIZATION_ADMIN:
 
         if user.parent_id != current_user["user_id"]:
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
         return user
 
@@ -368,51 +303,32 @@ def get_user_by_id(
     elif current_role == RoleEnum.DEPARTMENT_ADMIN:
 
         if current_user["department"] != user.department:
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
         return user
-
 
     # EMPLOYEE
     elif current_role == RoleEnum.EMPLOYEE:
 
         if current_user["user_id"] != user.id:
 
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
         return user
 
-    raise HTTPException(
-        status_code=403,
-        detail="Unauthorized"
-    )
+    raise HTTPException(status_code=403, detail="Unauthorized")
 
 
 # ================= UPDATE USER =================
 
-def update_user(
-    user_id: int,
-    data: UserUpdate,
-    db: Session,
-    current_user
-):
 
-    user = db.query(User).filter(
-        User.id == user_id
-    ).first()
+def update_user(user_id: int, data: UserUpdate, db: Session, current_user):
+
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
 
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
+        raise HTTPException(status_code=404, detail="User not found")
 
     current_role = current_user["role"]
 
@@ -421,17 +337,11 @@ def update_user(
         pass
 
     # ORGANIZATION ADMIN / HR
-    elif current_role in [
-    RoleEnum.ORGANIZATION_ADMIN,
-    RoleEnum.HR_MANAGER
-]:
+    elif current_role in [RoleEnum.ORGANIZATION_ADMIN, RoleEnum.HR_MANAGER]:
 
         if user.parent_id != current_user["user_id"]:
 
-            raise HTTPException(
-            status_code=403,
-            detail="Access denied"
-        )
+            raise HTTPException(status_code=403, detail="Access denied")
 
     # DEPARTMENT ADMIN
     elif current_role == RoleEnum.DEPARTMENT_ADMIN:
@@ -444,20 +354,14 @@ def update_user(
             != user.department
         ):
 
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
     # EMPLOYEE
     elif current_role == RoleEnum.EMPLOYEE:
 
         if current_user["user_id"] != user.id:
 
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
     # ================= UPDATE FIELDS =================
 
@@ -480,7 +384,7 @@ def update_user(
         user.is_active = data.is_active
 
     if data.country_code is not None:
-        user.country_code=data.country_code
+        user.country_code = data.country_code
 
     # ONLY SUPER ADMIN CAN CHANGE ROLE
     if data.role is not None:
@@ -488,8 +392,7 @@ def update_user(
         if current_role != RoleEnum.SUPER_ADMIN:
 
             raise HTTPException(
-                status_code=403,
-                detail="Only super admin can change role"
+                status_code=403, detail="Only super admin can change role"
             )
 
         user.role = data.role
@@ -498,30 +401,19 @@ def update_user(
 
     db.refresh(user)
 
-    return {
-        "message": "User updated successfully",
-        "data": user
-    }
+    return {"message": "User updated successfully", "data": user}
 
 
 # ================= DELETE USER =================
 
-def delete_user(
-    user_id: int,
-    db: Session,
-    current_user
-):
 
-    user = db.query(User).filter(
-        User.id == user_id
-    ).first()
+def delete_user(user_id: int, db: Session, current_user):
+
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
 
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
+        raise HTTPException(status_code=404, detail="User not found")
 
     current_role = current_user["role"]
 
@@ -530,69 +422,42 @@ def delete_user(
         pass
 
     # ORGANIZATION ADMIN / HR
-    elif current_role in [
-        RoleEnum.ORGANIZATION_ADMIN,
-        RoleEnum.HR_MANAGER
-    ]:
+    elif current_role in [RoleEnum.ORGANIZATION_ADMIN, RoleEnum.HR_MANAGER]:
 
         if user.parent_id != current_user["user_id"]:
 
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
     # DEPARTMENT ADMIN
     elif current_role == RoleEnum.DEPARTMENT_ADMIN:
 
-        if (
-            current_user["department"]
-            != user.department
-        ):
+        if current_user["department"] != user.department:
 
-            raise HTTPException(
-                status_code=403,
-                detail="Access denied"
-            )
+            raise HTTPException(status_code=403, detail="Access denied")
 
     else:
 
-        raise HTTPException(
-            status_code=403,
-            detail="Unauthorized"
-        )
+        raise HTTPException(status_code=403, detail="Unauthorized")
 
     db.delete(user)
 
     db.commit()
 
-    return {
-        "message": "User deleted successfully"
-    }
+    return {"message": "User deleted successfully"}
 
 
 # ================= CURRENT USER PROFILE =================
 
-def get_current_user_profile(
-    db: Session,
-    current_user
-):
 
-    user = db.query(User).filter(
-        User.id == current_user["user_id"]
-    ).first()
+def get_current_user_profile(db: Session, current_user):
+
+    user = db.query(User).filter(User.id == current_user["user_id"]).first()
 
     if not user:
 
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
+        raise HTTPException(status_code=404, detail="User not found")
 
     return user
-
-
-
 
 
 def search_users(
@@ -600,12 +465,10 @@ def search_users(
     status: Optional[str] = None,
     department: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user = None,
+    current_user=None,
 ):
 
-    query = db.query(User).filter(
-        User.role == RoleEnum.EMPLOYEE
-    )
+    query = db.query(User).filter(User.role == RoleEnum.EMPLOYEE)
 
     if current_user:
 
@@ -613,65 +476,45 @@ def search_users(
 
         if current_role == RoleEnum.ORGANIZATION_ADMIN:
 
-            query = query.filter(
-                User.parent_id == current_user["user_id"]
-            )
+            query = query.filter(User.parent_id == current_user["user_id"])
 
         elif current_role == RoleEnum.DEPARTMENT_ADMIN:
 
-            query = query.filter(
-                User.department == current_user["department"]
-            )
+            query = query.filter(User.department == current_user["department"])
 
         elif current_role == RoleEnum.EMPLOYEE:
 
-            query = query.filter(
-                User.id == current_user["user_id"]
-            )
+            query = query.filter(User.id == current_user["user_id"])
 
     # SEARCH FILTER
     if search:
 
         query = query.filter(
-              
             or_(
-              
                 User.name.ilike(f"%{search}%"),
                 User.email.ilike(f"%{search}%"),
                 User.phone.ilike(f"%{search}%"),
                 cast(User.role, String).ilike(f"%{search}%"),
-            ),User.role == RoleEnum.EMPLOYEE
+            ),
+            User.role == RoleEnum.EMPLOYEE,
         )
 
     # STATUS FILTER
     if status:
 
         if status == "active":
-            query = query.filter(
-                User.is_active == True
-            )
+            query = query.filter(User.is_active == True)
 
         elif status == "inactive":
-            query = query.filter(
-                User.is_active == False
-            )
+            query = query.filter(User.is_active == False)
 
     # DEPARTMENT FILTER
     if department:
 
-        query = query.filter(
-            User.department == department
-        )
+        query = query.filter(User.department == department)
 
     users = query.all()
 
     today = date.today()
 
-    return [
-        build_user_attendance_response(
-            user,
-            db,
-            today
-        )
-        for user in users
-    ]
+    return [build_user_attendance_response(user, db, today) for user in users]

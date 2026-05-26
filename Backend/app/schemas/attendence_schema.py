@@ -8,19 +8,14 @@ from datetime import date, datetime
 #     LeaveStatus
 # )
 
-from app.models.attendance_model import(
-    AttendanceStatus
-)
-from app.models.leave_model import(
-    LeaveType,
-    LeaveStatus
-)
+from app.models.attendance_model import AttendanceStatus
+from app.models.leave_model import LeaveType, LeaveStatus
 from app.schemas.user_schema import UserResponse
-
 
 # =========================
 # Attendance Schemas
 # =========================
+
 
 class AttendanceCreate(BaseModel):
 
@@ -41,7 +36,7 @@ class AttendanceResponse(BaseModel):
     check_in: Optional[datetime]
     check_out: Optional[datetime]
 
-    total_hours:Optional[float]=0
+    total_hours: Optional[float] = 0
 
     status: AttendanceStatus
 
@@ -51,5 +46,3 @@ class AttendanceResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
-

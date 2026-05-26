@@ -1,26 +1,15 @@
-from fastapi import (
-    Depends,
-    HTTPException,
-    status
-)
+from fastapi import Depends, HTTPException, status
 
-from fastapi.security import (
-    OAuth2PasswordBearer
-)
+from fastapi.security import OAuth2PasswordBearer
 
-from app.auth.jwt_handler import (
-    decode_token
-)
+from app.auth.jwt_handler import decode_token
 
 # ================= OAUTH =================
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/login"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
 
 # ================= CURRENT USER =================
-def get_current_user(
-    token: str = Depends(oauth2_scheme)
-):
+def get_current_user(token: str = Depends(oauth2_scheme)):
 
     try:
 
@@ -29,8 +18,7 @@ def get_current_user(
         if not payload:
 
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
             )
 
         return payload
@@ -38,24 +26,21 @@ def get_current_user(
     except Exception:
 
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token expired or invalid"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired or invalid"
         )
+
 
 # ================= ROLE CHECKER =================
 def require_roles(roles: list):
 
-    def checker(
-        user=Depends(get_current_user)
-    ):
+    def checker(user=Depends(get_current_user)):
 
         user_role = user.get("role")
 
         if user_role not in roles:
 
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied"
+                status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
             )
 
         return user

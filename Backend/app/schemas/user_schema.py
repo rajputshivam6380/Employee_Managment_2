@@ -1,17 +1,14 @@
 # app/schemas/user_schema.py
 
-from pydantic import (
-    BaseModel,
-    EmailStr
-)
+from pydantic import BaseModel, EmailStr
 
 from typing import Optional, List
 
 from app.models.enums import RoleEnum
 from app.models.department_enum import DepartmentEnum
 
-
 # ================= SUPER ADMIN =================
+
 
 class SuperAdminCreate(BaseModel):
 
@@ -32,8 +29,8 @@ class SuperAdminResponse(BaseModel):
 
     email: EmailStr
 
-    country_code:str
-    
+    country_code: str
+
     phone: str
 
     role: RoleEnum
@@ -45,6 +42,7 @@ class SuperAdminResponse(BaseModel):
 
 
 # ================= USER CREATE =================
+
 
 class UserCreate(BaseModel):
 
@@ -60,14 +58,14 @@ class UserCreate(BaseModel):
 
     department: Optional[DepartmentEnum] = None
 
-    country_code:str = '+91'
-
+    country_code: str = "+91"
 
     # Parent User ID
     parent_id: Optional[int] = None
 
 
 # ================= USER UPDATE =================
+
 
 class UserUpdate(BaseModel):
 
@@ -83,7 +81,7 @@ class UserUpdate(BaseModel):
 
     role: Optional[RoleEnum] = None
 
-    country_code:Optional[str] = None
+    country_code: Optional[str] = None
 
     department: Optional[DepartmentEnum] = None
 
@@ -91,6 +89,7 @@ class UserUpdate(BaseModel):
 
 
 # ================= BASIC USER RESPONSE =================
+
 
 class UserBaseResponse(BaseModel):
 
@@ -106,15 +105,15 @@ class UserBaseResponse(BaseModel):
         from_attributes = True
 
 
-
-
 class OrganizationResponse(BaseModel):
-    name:str
-    country_code:str
-    phone:str
-    email:str
+    name: str
+    country_code: str
+    phone: str
+    email: str
+
 
 # ================= USER RESPONSE =================
+
 
 class UserResponse(BaseModel):
 
@@ -134,7 +133,7 @@ class UserResponse(BaseModel):
 
     department: Optional[DepartmentEnum]
 
-    country_code:str
+    country_code: str
 
     is_present_today: bool = False
     attendance_status: str = "Absent"
@@ -147,5 +146,3 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
-

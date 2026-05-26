@@ -5,23 +5,15 @@ from datetime import date, datetime
 
 from app.models.attendance_model import AttendanceStatus
 
-from app.models.leave_model import(
-    LeaveType,
-    LeaveStatus
-)
+from app.models.leave_model import LeaveType, LeaveStatus
 
 from app.schemas.user_schema import UserResponse
 from app.schemas.project_schema import UserMiniResponse
 
-
-
-
-
-
-
 # =========================
 # Leave Schemas
 # =========================
+
 
 class LeaveCreate(BaseModel):
 

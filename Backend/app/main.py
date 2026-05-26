@@ -10,6 +10,7 @@ import os
 
 from app.routes.auth_routes import auth_router
 from app.routes.user_routes import user_router
+
 # from app.routes.organization_routes import organization_router
 # from app.routes.department_routes import department_router
 from app.routes.role_routes import role_router
@@ -17,10 +18,7 @@ from app.routes.project_routes import project_router
 from app.routes.attendence_router import attendence_router
 from app.routes.leave_routes import leave_router
 
-
-app = FastAPI(
-    title="Employee Management System"
-)
+app = FastAPI(title="Employee Management System")
 
 
 # CREATE UPLOADS FOLDER
@@ -29,11 +27,7 @@ if not os.path.exists("uploads"):
 
 
 # STATIC FILES
-app.mount(
-    "/uploads",
-    StaticFiles(directory="uploads"),
-    name="uploads"
-)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # ROUTES
@@ -52,34 +46,26 @@ app.include_router(attendence_router)
 app.include_router(leave_router)
 
 
-
 # CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
-        "http://localhost:5175"
+        "http://localhost:5175",
     ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 
 # VALIDATION ERROR
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError
-):
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
 
     return JSONResponse(
-        status_code=400,
-        content={
-            "message": "Invalid input",
-            "errors": exc.errors()
-        }
+        status_code=400, content={"message": "Invalid input", "errors": exc.errors()}
     )
 
 
@@ -87,6 +73,4 @@ async def validation_exception_handler(
 @app.get("/")
 def home():
 
-    return {
-        "message": "Employee Management System Running"
-    }
+    return {"message": "Employee Management System Running"}
