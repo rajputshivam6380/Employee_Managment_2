@@ -1022,8 +1022,43 @@ def get_employee_dashboard(
             if present_days else 0
         })
 
+    monthly_attendence=[]
 
+    days_elapsed=today.day
 
+    for day in range(1, days_elapsed+1):
+        current_date = month_start.replace(
+            day=day
+        )
+        record = next(
+            (
+                r
+                for r in attendance_record
+                if(
+                    r.attendance_date
+                    ==
+                    current_date
+                )
+            ),
+            None
+        )
+
+    monthly_attendence.append({
+        "date":
+    current_date.isoformat(),
+
+    "attendance":
+    (
+        100
+        if(
+            record
+            and
+            record.status
+            in attended_statuses
+        )
+        else 0
+    )
+    })
 
     projects=(
         db.query(Project).
@@ -1078,6 +1113,9 @@ def get_employee_dashboard(
 
         "weekly_attendance":
         weekly_attendance,
+
+        "monthly_attendence":
+        monthly_attendence,
 
         "project_summary":
         project_summery,

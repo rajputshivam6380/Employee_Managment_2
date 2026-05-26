@@ -24,6 +24,9 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  AreaChart,
+    Area,
+  
 } from "recharts";
 
 import dayjs from "dayjs";
@@ -326,6 +329,135 @@ export default function EmployeeDashboard() {
           </LineChart>
         </ResponsiveContainer>
       </section>
+
+
+
+
+      <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-2">
+
+<div className="mb-6 flex items-center justify-between">
+
+<div>
+
+<h2 className="text-xl font-bold text-gray-900">
+Monthly Attendance Performance
+</h2>
+
+<p className="text-sm text-gray-500">
+Present percentage for current month
+</p>
+
+</div>
+
+<div
+className="
+rounded-full
+bg-green-50
+px-4
+py-2
+text-green-700
+font-semibold
+"
+>
+
+{
+dashboard.monthly_attendence?.filter(
+(d)=>d.attendance===100
+).length
+}
+ Days Present
+
+</div>
+
+</div>
+
+<ResponsiveContainer
+width="100%"
+height={300}
+>
+
+<AreaChart
+data={
+dashboard?.monthly_attendence||[]
+}
+>
+
+<defs>
+
+<linearGradient
+id="attendance"
+x1="0"
+y1="0"
+x2="0"
+y2="1"
+>
+
+<stop
+offset="5%"
+stopColor="#22c55e"
+stopOpacity={0.5}
+/>
+
+<stop
+offset="95%"
+stopColor="#22c55e"
+stopOpacity={0}
+/>
+
+</linearGradient>
+
+</defs>
+
+<CartesianGrid
+strokeDasharray="3 3"
+/>
+
+<XAxis
+dataKey="date"
+tickFormatter={(value)=>
+dayjs(value)
+.format("DD")
+}
+/>
+
+<YAxis
+domain={[0,100]}
+/>
+
+<Tooltip
+labelFormatter={(value)=>
+dayjs(value)
+.format(
+"DD MMM YYYY"
+)
+}
+formatter={(v)=>
+[
+`${v}%`,
+"Attendance"
+]
+}
+/>
+
+<Area
+type="monotone"
+dataKey="attendance"
+stroke="#22c55e"
+strokeWidth={4}
+fill="url(#attendance)"
+dot={{
+r:6
+}}
+activeDot={{
+r:8
+}}
+/>
+
+</AreaChart>
+
+</ResponsiveContainer>
+
+</section>
     </div>
   );
 }
