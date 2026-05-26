@@ -19,11 +19,8 @@ const profileImage = (photo) => {
     return "https://cdn-icons-png.flaticon.com/512/149/149071.png";
   }
 
-  return photo.startsWith("http")
-    ? photo
-    : `http://localhost:8000${photo}`;
+  return photo.startsWith("http") ? photo : `http://localhost:8000${photo}`;
 };
-
 
 const DetailCard = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -32,9 +29,7 @@ const DetailCard = ({ icon: Icon, label, value }) => (
     </div>
 
     <div className="min-w-0">
-      <p className="text-sm font-medium text-gray-500">
-        {label}
-      </p>
+      <p className="text-sm font-medium text-gray-500">{label}</p>
       <p className="mt-1 break-words text-base font-semibold text-gray-800">
         {value || "N/A"}
       </p>
@@ -49,7 +44,6 @@ export default function EmployeeDetails() {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
-
 
   const fetchEmployee = useCallback(async () => {
     try {
@@ -100,143 +94,120 @@ export default function EmployeeDetails() {
           Back to Employees
         </button> */}
 
-
-
         <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setActiveTab("details")}
+            className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold shadow-md transition-all hover:cursor-pointer ${
+              activeTab === "details"
+                ? "bg-indigo-600 text-white"
+                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <ShieldCheck size={20} />
+            Employee Details
+          </button>
 
-  <button
-    type="button"
-    onClick={() => setActiveTab("details")}
-    className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold shadow-md transition-all hover:cursor-pointer ${
-      activeTab === "details"
-        ? "bg-indigo-600 text-white"
-        : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-    }`}
-  >
-    <ShieldCheck size={20} />
-    Employee Details
-  </button>
-
-  <button
-    type="button"
-    onClick={() => setActiveTab("attendance")}
-    className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold shadow-md transition-all hover:cursor-pointer ${
-      activeTab === "attendance"
-        ? "bg-indigo-600 text-white"
-        : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-    }`}
-  >
-    <ClipboardCheck size={20} />
-    Attendance
-  </button>
-
-</div>
+          <button
+            type="button"
+            onClick={() => setActiveTab("attendance")}
+            className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold shadow-md transition-all hover:cursor-pointer ${
+              activeTab === "attendance"
+                ? "bg-indigo-600 text-white"
+                : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <ClipboardCheck size={20} />
+            Attendance
+          </button>
+        </div>
       </div>
 
+      {activeTab === "details" && (
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <img
+                src={profileImage(employee.photo)}
+                alt={employee.name}
+                className="h-32 w-32 rounded-2xl border-4 border-indigo-100 object-cover shadow-sm"
+              />
 
-{activeTab === "details" && (
+              <div>
+                <p className="text-sm font-semibold uppercase text-indigo-500">
+                  Employee Profile
+                </p>
+                <h1 className="mt-2 text-3xl font-extrabold text-gray-900">
+                  {employee.name}
+                </h1>
 
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <img
-              src={profileImage(employee.photo)}
-              alt={employee.name}
-              className="h-32 w-32 rounded-2xl border-4 border-indigo-100 object-cover shadow-sm"
-            />
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
+                    <ShieldCheck size={16} />
+                    {formatRole(employee.role)}
+                  </span>
 
-            <div>
-              <p className="text-sm font-semibold uppercase text-indigo-500">
-                Employee Profile
-              </p>
-              <h1 className="mt-2 text-3xl font-extrabold text-gray-900">
-                {employee.name}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
-                  <ShieldCheck size={16} />
-                  {formatRole(employee.role)}
-                </span>
-
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
-                    employee.is_active
-                      ? "bg-green-50 text-green-700"
-                      : "bg-red-50 text-red-700"
-                  }`}
-                >
-                  <BadgeCheck size={16} />
-                  {employee.is_active ? "Active" : "Inactive"}
-                </span>
+                  <span
+                    className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
+                      employee.is_active
+                        ? "bg-green-50 text-green-700"
+                        : "bg-red-50 text-red-700"
+                    }`}
+                  >
+                    <BadgeCheck size={16} />
+                    {employee.is_active ? "Active" : "Inactive"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="grid gap-3 rounded-xl bg-gray-50 p-4 text-center sm:min-w-40">
-            <div>
-              <p className="text-sm text-gray-500">Employee ID</p>
-              <p className="text-xl font-bold text-gray-900">{employee.id}</p>
-            </div>
+            <div className="grid gap-3 rounded-xl bg-gray-50 p-4 text-center sm:min-w-40">
+              <div>
+                <p className="text-sm text-gray-500">Employee ID</p>
+                <p className="text-xl font-bold text-gray-900">{employee.id}</p>
+              </div>
 
-            {/* <div>
+              {/* <div>
               <p className="text-sm text-gray-500">Department</p>
               <p className="text-xl font-bold text-gray-900">
                 {employee.department || "N/A"}
               </p>
             </div> */}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-            )}
-
-
-            {activeTab === "details" && (
-
-
-      <section className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <DetailCard
-          icon={Mail}
-          label="Email"
-          value={employee.email}
-        />
-        <DetailCard
-          icon={Phone}
-          label="Phone"
-          value={phoneNumber}
-        />
-        <DetailCard
-          icon={Layers3}
-          label="Department"
-          value={employee.department}
-        />
-        {/* <DetailCard
+      {activeTab === "details" && (
+        <section className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          <DetailCard icon={Mail} label="Email" value={employee.email} />
+          <DetailCard icon={Phone} label="Phone" value={phoneNumber} />
+          <DetailCard
+            icon={Layers3}
+            label="Department"
+            value={employee.department}
+          />
+          {/* <DetailCard
           icon={UserRound}
           label="Reports To"
           value={employee.parent?.name}
         /> */}
-        {/* <DetailCard
+          {/* <DetailCard
           icon={Building2}
           label="Parent ID"
           value={employee.parent_id}
         /> */}
-        {/* <DetailCard
+          {/* <DetailCard
           icon={CalendarDays}
           label="Attendance Scope"
           value={`Attendance shown here belongs only to ${employee.name}`}
         /> */}
-      </section>
-            )}
+        </section>
+      )}
 
-
-              {activeTab === "attendance" && (
-      <Attendance
-        employeeId={employee.id}
-        embedded={true}
-      />
-    )}
-
+      {activeTab === "attendance" && (
+        <Attendance employeeId={employee.id} embedded={true} />
+      )}
     </div>
   );
 }

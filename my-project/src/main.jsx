@@ -4,13 +4,10 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import ThemeWrapper from "./component/ThemeContext";
 
-
-
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeWrapper>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </ThemeWrapper>
+  </ThemeWrapper>,
 );

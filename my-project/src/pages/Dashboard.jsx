@@ -56,57 +56,37 @@ const emptyDashboard = {
 };
 
 export default function Dashboard() {
+  const [dashboard, setDashboard] = useState(emptyDashboard);
 
-  const [dashboard, setDashboard] =
-    useState(emptyDashboard);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-
     const fetchDashboard = async () => {
-
       try {
-
         setLoading(true);
         setError("");
 
-        const response =
-          await getDashboardSummary();
+        const response = await getDashboardSummary();
 
-        setDashboard(
-          response.data || emptyDashboard
-        );
-
+        setDashboard(response.data || emptyDashboard);
       } catch (err) {
-
         console.log(err);
 
-        setError(
-          err.response?.data?.detail ||
-            "Failed to load dashboard"
-        );
-
+        setError(err.response?.data?.detail || "Failed to load dashboard");
       } finally {
-
         setLoading(false);
-
       }
     };
 
     fetchDashboard();
-
   }, []);
 
   const cards = [
     {
       title: "Total Employees",
-      value:
-        dashboard.cards.total_employees,
+      value: dashboard.cards.total_employees,
       icon: Users,
       color: "text-indigo-600",
       bg: "bg-indigo-50",
@@ -120,16 +100,14 @@ export default function Dashboard() {
     },
     {
       title: "Total Projects",
-      value:
-        dashboard.cards.total_projects,
+      value: dashboard.cards.total_projects,
       icon: Briefcase,
       color: "text-orange-600",
       bg: "bg-orange-50",
     },
     {
       title: "Assigned Project Count",
-      value:
-        dashboard.cards.assigned_project_count,
+      value: dashboard.cards.assigned_project_count,
       icon: ClipboardList,
       color: "text-sky-600",
       bg: "bg-sky-50",
@@ -139,18 +117,15 @@ export default function Dashboard() {
   const projectChartData = [
     {
       name: "Pending",
-      value:
-        dashboard.project_summary.pending,
+      value: dashboard.project_summary.pending,
     },
     {
       name: "In Progress",
-      value:
-        dashboard.project_summary.in_progress,
+      value: dashboard.project_summary.in_progress,
     },
     {
       name: "Completed",
-      value:
-        dashboard.project_summary.completed,
+      value: dashboard.project_summary.completed,
     },
   ];
 
@@ -216,10 +191,7 @@ export default function Dashboard() {
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.bg}`}
                 >
-                  <Icon
-                    size={26}
-                    className={card.color}
-                  />
+                  <Icon size={26} className={card.color} />
                 </div>
               </div>
             </div>
@@ -240,17 +212,14 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={dashboard.daily_attendance}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" 
-              tickFormatter={(value) =>
-    dayjs(value).format("DD-MM-YYYY")
-  }
-  />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(value) => dayjs(value).format("DD-MM-YYYY")}
+              />
               <YAxis />
               <Tooltip
-  labelFormatter={(value) =>
-    dayjs(value).format("DD-MM-YYYY")
-  }
-/>
+                labelFormatter={(value) => dayjs(value).format("DD-MM-YYYY")}
+              />
               <Legend />
               <Bar
                 dataKey="present"
@@ -284,10 +253,7 @@ export default function Dashboard() {
                 paddingAngle={4}
               >
                 {projectChartData.map((_, index) => (
-                  <Cell
-                    key={index}
-                    fill={chartColors[index]}
-                  />
+                  <Cell key={index} fill={chartColors[index]} />
                 ))}
               </Pie>
               <Tooltip />

@@ -1,16 +1,8 @@
-import {
-  createContext,
-  useContext,
-} from "react";
+import { createContext, useContext } from "react";
 
-export const ThemeModeContext =
-createContext({
+export const ThemeModeContext = createContext({
   mode: "light",
   toggleTheme: () => {},
 });
 
-export const useThemeMode =
-() =>
-useContext(
-ThemeModeContext
-);
+export const useThemeMode = () => useContext(ThemeModeContext);

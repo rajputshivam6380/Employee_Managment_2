@@ -6,10 +6,7 @@ import {
   isTokenExpired,
 } from "../utils/auth";
 
-const ProtectedRoute = ({
-  children,
-  allowedRoles = [],
-}) => {
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const location = useLocation();
 
   const token = localStorage.getItem("token");
@@ -21,27 +18,14 @@ const ProtectedRoute = ({
 
   // TOKEN CHECK
   if (!token || isTokenExpired(token)) {
-
     clearAuth();
 
-    return (
-      <Navigate
-        to="/"
-        replace
-        state={{ from: location.pathname }}
-      />
-    );
-
+    return <Navigate to="/" replace state={{ from: location.pathname }} />;
   }
 
   // ROLE CHECK
-  if (
-    allowedRoles.length > 0 &&
-    !allowedRoles.includes(user?.role)
-  ) {
-
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
     return <Navigate to="/unauthorized" replace />;
-
   }
 
   return children;

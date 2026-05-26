@@ -3,8 +3,7 @@ import { Mail, ShieldCheck } from "lucide-react";
 
 import api from "../apis/api";
 import { formatRole, saveAuth } from "../utils/auth";
-import { Phone } from 'lucide-react';
-
+import { Phone } from "lucide-react";
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -50,9 +49,7 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-      
       <div className="bg-indigo-500 h-32 relative">
-         
         <div className="absolute left-1/2 -bottom-14 -translate-x-1/2">
           <img
             src={
@@ -65,23 +62,14 @@ export default function Profile() {
             alt="profile"
             className="w-28 h-28 rounded-full border-4 border-white object-cover shadow-lg"
           />
-          
         </div>
-        
       </div>
 
-
-
       <div className="pt-16 pb-10 px-8">
-        
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {profile.name}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800">{profile.name}</h1>
 
-          <p className="text-gray-500 mt-2">
-            {profile.email}
-          </p>
+          <p className="text-gray-500 mt-2">{profile.email}</p>
 
           <span className="inline-block mt-4 bg-indigo-100 text-indigo-600 px-5 py-2 rounded-full text-sm font-semibold">
             {formatRole(profile.role)}
@@ -109,7 +97,9 @@ export default function Profile() {
             <Phone className="text-blue-500" size={28} />
             <div>
               <p className="text-gray-400 text-sm">Phone</p>
-              <p className="font-semibold">{profile.country_code}{' '}{profile.phone}</p>
+              <p className="font-semibold">
+                {profile.country_code} {profile.phone}
+              </p>
             </div>
           </div>
         </div>

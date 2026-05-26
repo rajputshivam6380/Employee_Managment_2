@@ -25,18 +25,13 @@ import {
   XAxis,
   YAxis,
   AreaChart,
-    Area,
-  
+  Area,
 } from "recharts";
 
 import dayjs from "dayjs";
 import { getEmployeeDashboardSummary } from "../api/dashboardApi";
 
-const chartColors = [
-  "#4f46e5",
-  "#14b8a6",
-  "#f97316",
-];
+const chartColors = ["#4f46e5", "#14b8a6", "#f97316"];
 
 const emptyDashboard = {
   cards: {
@@ -64,8 +59,7 @@ const statusColor = {
 };
 
 export default function EmployeeDashboard() {
-  const [dashboard, setDashboard] =
-    useState(emptyDashboard);
+  const [dashboard, setDashboard] = useState(emptyDashboard);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -75,18 +69,14 @@ export default function EmployeeDashboard() {
         setLoading(true);
         setError("");
 
-        const response =
-          await getEmployeeDashboardSummary();
+        const response = await getEmployeeDashboardSummary();
 
-        setDashboard(
-          response.data || emptyDashboard
-        );
+        setDashboard(response.data || emptyDashboard);
       } catch (err) {
         console.log(err);
 
         setError(
-          err.response?.data?.detail ||
-            "Failed to load employee dashboard"
+          err.response?.data?.detail || "Failed to load employee dashboard",
         );
       } finally {
         setLoading(false);
@@ -163,8 +153,6 @@ export default function EmployeeDashboard() {
     );
   }
 
-
-
   return (
     <div className="min-h-screen space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -202,10 +190,7 @@ export default function EmployeeDashboard() {
                 <div
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${card.bg}`}
                 >
-                  <Icon
-                    size={26}
-                    className={card.color}
-                  />
+                  <Icon size={26} className={card.color} />
                 </div>
               </div>
             </div>
@@ -214,71 +199,53 @@ export default function EmployeeDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-       <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-2">
+        <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm xl:col-span-2">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900">
+              My Daily Attendance
+            </h2>
 
-  <div className="mb-4 flex items-center justify-between">
+            <BarChart3 className="text-indigo-500" />
+          </div>
 
-    <h2 className="text-lg font-bold text-gray-900">
-      My Daily Attendance
-    </h2>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={dashboard.daily_attendance}>
+              <CartesianGrid strokeDasharray="3 3" />
 
-    <BarChart3 className="text-indigo-500" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(value) => dayjs(value).format("DD-MM-YYYY")}
+              />
 
-  </div>
+              <YAxis />
 
-  <ResponsiveContainer width="100%" height={320}>
+              <Tooltip
+                labelFormatter={(value) => dayjs(value).format("DD-MM-YYYY")}
+              />
 
-    <BarChart data={dashboard.daily_attendance}>
+              <Legend />
 
-      <CartesianGrid strokeDasharray="3 3" />
+              <Bar
+                dataKey="present"
+                name="Present"
+                fill="#22c55e"
+                radius={[6, 6, 0, 0]}
+              />
 
-      <XAxis
-        dataKey="date"
-        tickFormatter={(value) =>
-          dayjs(value).format(
-            "DD-MM-YYYY"
-          )
-        }
-      />
-
-      <YAxis />
-
-      <Tooltip
-        labelFormatter={(value) =>
-          dayjs(value).format(
-            "DD-MM-YYYY"
-          )
-        }
-      />
-
-      <Legend />
-
-      <Bar
-        dataKey="present"
-        name="Present"
-        fill="#22c55e"
-        radius={[6, 6, 0, 0]}
-      />
-
-      <Bar
-        dataKey="absent"
-        name="Absent"
-        fill="#ef4444"
-        radius={[6, 6, 0, 0]}
-      />
-
-    </BarChart>
-
-  </ResponsiveContainer>
-
-</section>
+              <Bar
+                dataKey="absent"
+                name="Absent"
+                fill="#ef4444"
+                radius={[6, 6, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
         <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-gray-900">
               My Project Status
             </h2>
-
-            
 
             <Briefcase className="text-orange-500" />
           </div>
@@ -294,10 +261,7 @@ export default function EmployeeDashboard() {
                 paddingAngle={4}
               >
                 {projectChartData.map((_, index) => (
-                  <Cell
-                    key={index}
-                    fill={chartColors[index]}
-                  />
+                  <Cell key={index} fill={chartColors[index]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -330,27 +294,20 @@ export default function EmployeeDashboard() {
         </ResponsiveContainer>
       </section>
 
-
-
-
       <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-2">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">
+              Monthly Attendance Performance
+            </h2>
 
-<div className="mb-6 flex items-center justify-between">
+            <p className="text-sm text-gray-500">
+              Present percentage for current month
+            </p>
+          </div>
 
-<div>
-
-<h2 className="text-xl font-bold text-gray-900">
-Monthly Attendance Performance
-</h2>
-
-<p className="text-sm text-gray-500">
-Present percentage for current month
-</p>
-
-</div>
-
-<div
-className="
+          <div
+            className="
 rounded-full
 bg-green-50
 px-4
@@ -358,106 +315,55 @@ py-2
 text-green-700
 font-semibold
 "
->
+          >
+            {
+              dashboard.monthly_attendence?.filter((d) => d.attendance === 100)
+                .length
+            }
+            Days Present
+          </div>
+        </div>
 
-{
-dashboard.monthly_attendence?.filter(
-(d)=>d.attendance===100
-).length
-}
- Days Present
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={dashboard?.monthly_attendence || []}>
+            <defs>
+              <linearGradient id="attendance" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.5} />
 
-</div>
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+              </linearGradient>
+            </defs>
 
-</div>
+            <CartesianGrid strokeDasharray="3 3" />
 
-<ResponsiveContainer
-width="100%"
-height={300}
->
+            <XAxis
+              dataKey="date"
+              tickFormatter={(value) => dayjs(value).format("DD")}
+            />
 
-<AreaChart
-data={
-dashboard?.monthly_attendence||[]
-}
->
+            <YAxis domain={[0, 100]} />
 
-<defs>
+            <Tooltip
+              labelFormatter={(value) => dayjs(value).format("DD MMM YYYY")}
+              formatter={(v) => [`${v}%`, "Attendance"]}
+            />
 
-<linearGradient
-id="attendance"
-x1="0"
-y1="0"
-x2="0"
-y2="1"
->
-
-<stop
-offset="5%"
-stopColor="#22c55e"
-stopOpacity={0.5}
-/>
-
-<stop
-offset="95%"
-stopColor="#22c55e"
-stopOpacity={0}
-/>
-
-</linearGradient>
-
-</defs>
-
-<CartesianGrid
-strokeDasharray="3 3"
-/>
-
-<XAxis
-dataKey="date"
-tickFormatter={(value)=>
-dayjs(value)
-.format("DD")
-}
-/>
-
-<YAxis
-domain={[0,100]}
-/>
-
-<Tooltip
-labelFormatter={(value)=>
-dayjs(value)
-.format(
-"DD MMM YYYY"
-)
-}
-formatter={(v)=>
-[
-`${v}%`,
-"Attendance"
-]
-}
-/>
-
-<Area
-type="monotone"
-dataKey="attendance"
-stroke="#22c55e"
-strokeWidth={4}
-fill="url(#attendance)"
-dot={{
-r:6
-}}
-activeDot={{
-r:8
-}}
-/>
-
-</AreaChart>
-
-</ResponsiveContainer>
-
-</section>
+            <Area
+              type="monotone"
+              dataKey="attendance"
+              stroke="#22c55e"
+              strokeWidth={4}
+              fill="url(#attendance)"
+              dot={{
+                r: 6,
+              }}
+              activeDot={{
+                r: 8,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </section>
     </div>
   );
 }

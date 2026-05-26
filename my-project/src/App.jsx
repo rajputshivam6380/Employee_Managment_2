@@ -4,11 +4,7 @@ import DashboardLayout from "./layoutes/DashboardLayout";
 import ProtectedRoute from "./component/ProtectedRoute";
 import RoleRedirect from "./component/RoleRedirect";
 
-import {
-  ALL_ROLES,
-  MANAGER_ROLES,
-  ROLES,
-} from "./utils/auth";
+import { ALL_ROLES, MANAGER_ROLES, ROLES } from "./utils/auth";
 
 import EmployeeDetails from "./pages/EmployeeDetails";
 import Employees from "./pages/Employees";
@@ -28,56 +24,34 @@ import AttendenceTable from "./component/AttendenceTable";
 import Dashboard from "./pages/Dashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 
-import {
-  ToastContainer,
-} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-
 function App() {
-
   return (
     <>
-
       <Routes>
+        <Route path="/" element={<Login />} />
 
-        <Route
-          path="/"
-          element={<Login />}
-        />
-
-        <Route
-          path="/unauthorized"
-          element={<Unauthorized />}
-        />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
         {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute
-              allowedRoles={ALL_ROLES}
-            >
+            <ProtectedRoute allowedRoles={ALL_ROLES}>
               <DashboardLayout />
             </ProtectedRoute>
           }
         >
-
-          <Route
-            index
-            element={<RoleRedirect />}
-          />
+          <Route index element={<RoleRedirect />} />
 
           {/* EMPLOYEE DASHBOARD */}
           <Route
             path="employee_home"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  ROLES.EMPLOYEE
-                ]}
-              >
+              <ProtectedRoute allowedRoles={[ROLES.EMPLOYEE]}>
                 <EmployeeDashboard />
               </ProtectedRoute>
             }
@@ -87,11 +61,7 @@ function App() {
           <Route
             path="home"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  ROLES.ORGANIZATION_ADMIN
-                ]}
-              >
+              <ProtectedRoute allowedRoles={[ROLES.ORGANIZATION_ADMIN]}>
                 <Dashboard />
               </ProtectedRoute>
             }
@@ -100,9 +70,7 @@ function App() {
           <Route
             path="employees"
             element={
-              <ProtectedRoute
-                allowedRoles={MANAGER_ROLES}
-              >
+              <ProtectedRoute allowedRoles={MANAGER_ROLES}>
                 <Employees />
               </ProtectedRoute>
             }
@@ -111,9 +79,7 @@ function App() {
           <Route
             path="employees/view/:id"
             element={
-              <ProtectedRoute
-                allowedRoles={MANAGER_ROLES}
-              >
+              <ProtectedRoute allowedRoles={MANAGER_ROLES}>
                 <EmployeeDetails />
               </ProtectedRoute>
             }
@@ -122,11 +88,7 @@ function App() {
           <Route
             path="organizations"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  ROLES.SUPER_ADMIN
-                ]}
-              >
+              <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]}>
                 <Organizations />
               </ProtectedRoute>
             }
@@ -136,44 +98,25 @@ function App() {
             path="organizations/view/:id"
             element={
               <ProtectedRoute
-                allowedRoles={[
-                  ROLES.SUPER_ADMIN,
-                  ROLES.ORGANIZATION_ADMIN
-                ]}
+                allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ORGANIZATION_ADMIN]}
               >
                 <OrganizationDetails />
               </ProtectedRoute>
             }
           />
 
-          <Route
-            path="profile"
-            element={<Profile />}
-          />
+          <Route path="profile" element={<Profile />} />
 
-          <Route
-            path="assign-project"
-            element={<Project />}
-          />
+          <Route path="assign-project" element={<Project />} />
 
-          <Route
-            path="attendance/all"
-            element={<AttendenceTable />}
-          />
+          <Route path="attendance/all" element={<AttendenceTable />} />
 
-          <Route
-            path="projects"
-            element={<AssignedProject />}
-          />
+          <Route path="projects" element={<AssignedProject />} />
 
           <Route
             path="attendance"
             element={
-              <ProtectedRoute
-                allowedRoles={[
-                  ROLES.EMPLOYEE
-                ]}
-              >
+              <ProtectedRoute allowedRoles={[ROLES.EMPLOYEE]}>
                 <Attendance />
               </ProtectedRoute>
             }
@@ -182,23 +125,14 @@ function App() {
           <Route
             path="attendance/:employeeId"
             element={
-              <ProtectedRoute
-                allowedRoles={
-                  MANAGER_ROLES
-                }
-              >
+              <ProtectedRoute allowedRoles={MANAGER_ROLES}>
                 <Attendance />
               </ProtectedRoute>
             }
           />
-
         </Route>
 
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <ToastContainer
@@ -210,7 +144,6 @@ function App() {
         draggable
         theme="colored"
       />
-
     </>
   );
 }

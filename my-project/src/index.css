@@ -21,7 +21,9 @@ html.dark {
 body {
   background: #f9fafb;
   color: #111827;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
 }
 
 html.dark body {

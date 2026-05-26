@@ -7,9 +7,7 @@ export default function CommonAlert({
   message,
   severity = "success",
 }) {
-
   const handleClose = (_, reason) => {
-
     if (reason === "clickaway") return;
 
     setOpen(false);

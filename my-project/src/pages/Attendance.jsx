@@ -30,7 +30,6 @@ import MenuItem from "@mui/material/MenuItem";
 
 import IconButton from "@mui/material/IconButton";
 
-
 export default function Attendance({
   employeeId: selectedEmployeeId,
   embedded = false,
@@ -40,8 +39,7 @@ export default function Attendance({
 
   const currentUser = getStoredUser();
 
-  const isEmployee =
-    currentUser?.role === ROLES.EMPLOYEE && !employeeId;
+  const isEmployee = currentUser?.role === ROLES.EMPLOYEE && !employeeId;
 
   const [attendance, setAttendance] = useState([]);
   const [page, setPage] = useState(0);
@@ -55,19 +53,19 @@ export default function Attendance({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-//   const [searchBox, setSearchBox] = useState("");
-// const [statusBox, setStatusBox] = useState("");
-// const [startDateBox, setStartDateBox] =
-//   useState(null);
-// const [endDateBox, setEndDateBox] =
-//   useState(null);
+  //   const [searchBox, setSearchBox] = useState("");
+  // const [statusBox, setStatusBox] = useState("");
+  // const [startDateBox, setStartDateBox] =
+  //   useState(null);
+  // const [endDateBox, setEndDateBox] =
+  //   useState(null);
 
-// const fetchAttendenceForEmpty = async ()=>{
-//   const res=
-//   await api.get("/attendence");
+  // const fetchAttendenceForEmpty = async ()=>{
+  //   const res=
+  //   await api.get("/attendence");
 
-//   setAttendance(res.data);
-// };
+  //   setAttendance(res.data);
+  // };
 
   const fetchAttendance = useCallback(async () => {
     try {
@@ -84,7 +82,7 @@ export default function Attendance({
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
       } else {
         const today = new Date().toISOString().split("T")[0];
@@ -108,15 +106,15 @@ export default function Attendance({
     fetchAttendance();
   }, [fetchAttendance]);
 
-const handleRefresh = () => {
-  setStatusFilter("");
-  setStartDate("");
-  setEndDate("");
+  const handleRefresh = () => {
+    setStatusFilter("");
+    setStartDate("");
+    setEndDate("");
 
-  setPage(0);
+    setPage(0);
 
-  fetchAttendance();
-};
+    fetchAttendance();
+  };
 
   const debouncedAttendanceFilter = useMemo(
     () =>
@@ -144,7 +142,7 @@ const handleRefresh = () => {
           console.log(err);
         }
       }, 500),
-    [employeeId]
+    [employeeId],
   );
 
   useEffect(() => {
@@ -153,12 +151,7 @@ const handleRefresh = () => {
       return;
     }
 
-    debouncedAttendanceFilter(
-      search,
-      statusFilter,
-      startDate,
-      endDate
-    );
+    debouncedAttendanceFilter(search, statusFilter, startDate, endDate);
 
     return () => {
       debouncedAttendanceFilter.cancel();
@@ -172,7 +165,6 @@ const handleRefresh = () => {
     fetchAttendance,
   ]);
 
-
   // const getStatusColor = (value) => {
 
   //   if (value === "Present") return "success";
@@ -180,11 +172,9 @@ const handleRefresh = () => {
   //   if (value === "Half Day") return "info";
   //   if (value === "Leave") return "error";
   //   if (value === "Completed") return "success";
-      
 
   //   return "default";
   // };
-
 
   const formatHours = (hours) => {
     if (!hours) return "0 mins";
@@ -216,11 +206,8 @@ const handleRefresh = () => {
 
   return (
     <div className={embedded ? "w-full" : "w-full px-3 py-2"}>
-
       <div className="flex flex-wrap justify-end items-end gap-4 bg-white p-4 rounded-t-2xl shadow-sm border border-gray-200">
-
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-
           <div className="w-[220px]">
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
@@ -240,23 +227,21 @@ const handleRefresh = () => {
           </div>
 
           <div className="w-[220px]">
-      <DatePicker
-  label="Start Date"
-  value={startDate ? dayjs(startDate) : null}
-  format="DD-MM-YYYY"
-  onChange={(value) =>
-    setStartDate(
-      value ? value.format("YYYY-MM-DD") : ""
-    )
-  }
-  slotProps={{
-    textField: { fullWidth: true },
-  }}
-/>
+            <DatePicker
+              label="Start Date"
+              value={startDate ? dayjs(startDate) : null}
+              format="DD-MM-YYYY"
+              onChange={(value) =>
+                setStartDate(value ? value.format("YYYY-MM-DD") : "")
+              }
+              slotProps={{
+                textField: { fullWidth: true },
+              }}
+            />
           </div>
 
           <div className="w-[220px]">
-{/* <div className="w-full md:w-[220px]">
+            {/* <div className="w-full md:w-[220px]">
   <DatePicker
     label="End Date"
     value={endDate ? dayjs(endDate) : null}
@@ -277,38 +262,26 @@ const handleRefresh = () => {
   />
 </div> */}
 
-
-
-
-
-
-<div className="w-full md:w-[220px]">
-  <DatePicker
-    label="End Date"
-    value={endDate ? dayjs(endDate) : null}
-    format="DD-MM-YYYY"
-
-    // ✅ NEW: disable until startDate is selected
-    disabled={!startDate}
-
-    // ✅ still keep restriction (extra safety)
-    minDate={startDate ? dayjs(startDate) : undefined}
-
-    onChange={(value) =>
-      setEndDate(
-        value ? value.format("YYYY-MM-DD") : ""
-      )
-    }
-
-    slotProps={{
-      textField: { fullWidth: true },
-    }}
-  />
-</div>
+            <div className="w-full md:w-[220px]">
+              <DatePicker
+                label="End Date"
+                value={endDate ? dayjs(endDate) : null}
+                format="DD-MM-YYYY"
+                // ✅ NEW: disable until startDate is selected
+                disabled={!startDate}
+                // ✅ still keep restriction (extra safety)
+                minDate={startDate ? dayjs(startDate) : undefined}
+                onChange={(value) =>
+                  setEndDate(value ? value.format("YYYY-MM-DD") : "")
+                }
+                slotProps={{
+                  textField: { fullWidth: true },
+                }}
+              />
+            </div>
           </div>
-
         </LocalizationProvider>
-     <IconButton
+        <IconButton
           onClick={handleRefresh}
           sx={{
             backgroundColor: "#111827",
@@ -322,11 +295,7 @@ const handleRefresh = () => {
         >
           <RotateCcw size={18} />
         </IconButton>
- 
-
       </div>
-
-
 
       <Paper
         sx={{
@@ -337,7 +306,6 @@ const handleRefresh = () => {
       >
         <TableContainer sx={{ maxHeight: embedded ? 420 : 550 }}>
           <Table stickyHeader>
-
             <TableHead>
               <TableRow>
                 <TableCell>Date</TableCell>
@@ -355,12 +323,9 @@ const handleRefresh = () => {
                   <TableRow hover key={index}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                                              <CalendarCheck2
-                                                size={18}
-                                                className="text-indigo-500"
-                                              />
-                                              {dayjs(row.attendance_date).format("DD-MM-YYYY")}
-                                            </div>
+                        <CalendarCheck2 size={18} className="text-indigo-500" />
+                        {dayjs(row.attendance_date).format("DD-MM-YYYY")}
+                      </div>
                     </TableCell>
 
                     <TableCell>
@@ -368,10 +333,8 @@ const handleRefresh = () => {
                         <Clock3 size={18} />
                         {convertTo12Hour(
                           row.check_in
-                            ? new Date(row.check_in)
-                                .toTimeString()
-                                .slice(0, 8)
-                            : null
+                            ? new Date(row.check_in).toTimeString().slice(0, 8)
+                            : null,
                         )}
                       </div>
                     </TableCell>
@@ -381,17 +344,13 @@ const handleRefresh = () => {
                         <Clock3 size={18} />
                         {convertTo12Hour(
                           row.check_out
-                            ? new Date(row.check_out)
-                                .toTimeString()
-                                .slice(0, 8)
-                            : null
+                            ? new Date(row.check_out).toTimeString().slice(0, 8)
+                            : null,
                         )}
                       </div>
                     </TableCell>
 
-                    <TableCell>
-                      {formatHours(row.total_hours)}
-                    </TableCell>
+                    <TableCell>{formatHours(row.total_hours)}</TableCell>
 
                     {/* <TableCell>
                       <Chip
@@ -406,47 +365,41 @@ const handleRefresh = () => {
                       />
                     </TableCell> */}
 
+                    <TableCell>
+                      <Chip
+                        label={row.status}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          borderRadius: "8px",
 
-<TableCell>
-  <Chip
-    label={row.status}
-    size="small"
-    sx={{
-      fontWeight: 600,
-      borderRadius: "8px",
+                          ...(row.status === "Completed" && {
+                            backgroundColor: "#dcfce7", // light green
+                            color: "#15803d", // dark green text
+                          }),
 
-      ...(row.status === "Completed" && {
-        backgroundColor: "#dcfce7", // light green
-        color: "#15803d", // dark green text
-      }),
+                          ...(row.status === "Present" && {
+                            backgroundColor: "#bbf7d0",
+                            color: "#166534",
+                          }),
 
-      ...(row.status === "Present" && {
-        backgroundColor: "#bbf7d0",
-        color: "#166534",
-      }),
+                          ...(row.status === "Late" && {
+                            backgroundColor: "#fef3c7",
+                            color: "#92400e",
+                          }),
 
-      ...(row.status === "Late" && {
-        backgroundColor: "#fef3c7",
-        color: "#92400e",
-      }),
+                          ...(row.status === "Half Day" && {
+                            backgroundColor: "#dbeafe",
+                            color: "#1d4ed8",
+                          }),
 
-      ...(row.status === "Half Day" && {
-        backgroundColor: "#dbeafe",
-        color: "#1d4ed8",
-      }),
-
-      ...(row.status === "Leave" && {
-        backgroundColor: "#fee2e2",
-        color: "#b91c1c",
-      }),
-    }}
-  />
-</TableCell>
-
-                        
-
-
-
+                          ...(row.status === "Leave" && {
+                            backgroundColor: "#fee2e2",
+                            color: "#b91c1c",
+                          }),
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))}
 

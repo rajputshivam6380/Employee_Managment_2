@@ -15,11 +15,7 @@ export const MANAGER_ROLES = [
   ROLES.DEPARTMENT_ADMIN,
 ];
 
-export const ALL_ROLES = [
-  ...MANAGER_ROLES,
-  ROLES.EMPLOYEE,
-];
-
+export const ALL_ROLES = [...MANAGER_ROLES, ROLES.EMPLOYEE];
 
 // export const EMPLOYEE=
 //   ROLES.EMPLOYEE;
@@ -39,7 +35,6 @@ export function formatName(name = "") {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
-
 
 export function getStoredUser() {
   try {
@@ -71,10 +66,11 @@ export function saveAuth(token, userFromApi = null) {
   const payload = getTokenPayload(token);
   const user = {
     id: userFromApi?.id ?? payload?.user_id,
-    name: userFromApi?.name ?? payload?.name??"",
-    email: userFromApi?.email ?? payload?.email??"",
+    name: userFromApi?.name ?? payload?.name ?? "",
+    email: userFromApi?.email ?? payload?.email ?? "",
     role: userFromApi?.role ?? payload?.role,
-    organization_id: userFromApi?.organization_id ?? payload?.organization_id ?? null,
+    organization_id:
+      userFromApi?.organization_id ?? payload?.organization_id ?? null,
     department: userFromApi?.department ?? payload?.department ?? null,
   };
 

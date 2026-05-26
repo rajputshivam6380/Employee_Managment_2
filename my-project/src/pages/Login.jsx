@@ -46,7 +46,7 @@ function Login() {
       navigate(
         user?.role === ROLES.EMPLOYEE
           ? "/dashboard/employee_home"
-          : "/dashboard"
+          : "/dashboard",
       );
     }
   }, [navigate]);
@@ -74,61 +74,36 @@ function Login() {
           password: values.password,
         });
 
-        const user = saveAuth(
-          res.data.access_token,
-          res.data.user
-        );
+        const user = saveAuth(res.data.access_token, res.data.user);
 
         if (MANAGER_ROLES.includes(user.role)) {
           navigate("/dashboard");
-
         } else if (user.role === ROLES.EMPLOYEE) {
           navigate("/dashboard/employee_home");
-
         } else {
           clearAuth();
           setError("Unauthorized Access");
         }
-
       } catch (err) {
-
-        setError(
-          err.response?.data?.detail ||
-            "Invalid email or password"
-        );
-
+        setError(err.response?.data?.detail || "Invalid email or password");
       } finally {
-
         setLoading(false);
-
       }
     },
   });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-indigo-200 px-4">
-
       <div className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-md border border-gray-100">
-
         {/* HEADER */}
         <div className="mb-8 text-center">
-
-          <h2 className="text-4xl font-bold text-indigo-600">
-            Welcome Back
-          </h2>
-
-        
+          <h2 className="text-4xl font-bold text-indigo-600">Welcome Back</h2>
         </div>
 
         {/* FORM */}
-        <form
-          onSubmit={formik.handleSubmit}
-          className="space-y-5"
-        >
-
+        <form onSubmit={formik.handleSubmit} className="space-y-5">
           {/* EMAIL */}
           <div className="flex flex-col">
-
             {/* <label className="mb-1 text-sm font-medium text-gray-700">
               Email Address
             </label> */}
@@ -141,74 +116,58 @@ function Login() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className={`${inputStyle} ${
-                formik.touched.email &&
-                formik.errors.email
+                formik.touched.email && formik.errors.email
                   ? "border-red-500"
                   : "border-gray-300"
               }`}
             />
 
-            {formik.touched.email &&
-              formik.errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {formik.errors.email}
-                </p>
-              )}
-
+            {formik.touched.email && formik.errors.email && (
+              <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>
+            )}
           </div>
 
           {/* PASSWORD */}
-   {/* PASSWORD */}
-<div className="flex flex-col">
+          {/* PASSWORD */}
+          <div className="flex flex-col">
+            <TextField
+              fullWidth
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Enter your password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowPassword((prev) => !prev);
+                        }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                },
+              }}
+            />
 
-<TextField
-  fullWidth
-  type={showPassword ? "text" : "password"}
-  name="password"
-  placeholder="Enter your password"
-  value={formik.values.password}
-  onChange={formik.handleChange}
-  onBlur={formik.handleBlur}
-  error={
-    formik.touched.password &&
-    Boolean(formik.errors.password)
-  }
-  slotProps={{
-    input: {
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton
-            onClick={(e) => {
-              e.preventDefault();
-              setShowPassword((prev) => !prev);
-            }}
-          >
-            {showPassword ? (
-              <VisibilityOff />
-            ) : (
-              <Visibility />
+            {formik.touched.password && formik.errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {formik.errors.password}
+              </p>
             )}
-          </IconButton>
-        </InputAdornment>
-      ),
-    },
-  }}
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "12px",
-    },
-  }}
-/>
-
-  {formik.touched.password &&
-    formik.errors.password && (
-      <p className="text-red-500 text-sm mt-1">
-        {formik.errors.password}
-      </p>
-    )}
-
-</div>
-
+          </div>
 
           {/* ERROR MESSAGE */}
           {error && (
@@ -223,17 +182,10 @@ function Login() {
             disabled={loading}
             className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-60 hover:cursor-pointer"
           >
-
-            {loading
-              ? "Logging in..."
-              : "Login"}
-
+            {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
-
       </div>
-
     </div>
   );
 }

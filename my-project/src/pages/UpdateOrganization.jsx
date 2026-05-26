@@ -13,17 +13,14 @@ export default function UpdateOrganization({
   organization,
   fetchOrganizations,
 }) {
-
   // ================= STATES =================
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      email: "",
-      address: "",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
 
   // ================= AUTO FILL =================
   // useEffect(() => {
@@ -46,9 +43,7 @@ export default function UpdateOrganization({
 
   // ================= HANDLE CHANGE =================
   const handleChange = (e) => {
-
-    const { name, value } =
-      e.target;
+    const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -58,13 +53,11 @@ export default function UpdateOrganization({
 
   // ================= RESET =================
   const resetForm = () => {
-
     if (organization) {
-
       setFormData({
         name: "",
 
-        email:"",
+        email: "",
 
         address: "",
       });
@@ -73,107 +66,64 @@ export default function UpdateOrganization({
 
   // ================= UPDATE ORGANIZATION =================
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     try {
-
       setLoading(true);
 
-      const token =
-        localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
       // ================= PATCH DATA =================
       const updatedData = {};
 
-      if (
-        formData.name.trim() !== ""
-      ) {
-
-        updatedData.name =
-          formData.name;
+      if (formData.name.trim() !== "") {
+        updatedData.name = formData.name;
       }
 
-      if (
-        formData.email.trim() !== ""
-      ) {
-
-        updatedData.email =
-          formData.email;
+      if (formData.email.trim() !== "") {
+        updatedData.email = formData.email;
       }
 
-      if (
-        formData.address.trim() !== ""
-      ) {
-
-        updatedData.address =
-          formData.address;
+      if (formData.address.trim() !== "") {
+        updatedData.address = formData.address;
       }
 
-      console.log(
-        "PATCH DATA:",
-        updatedData
-      );
+      console.log("PATCH DATA:", updatedData);
 
       // ================= API =================
-      await api.patch(
-        `/organizations/${organization.id}`,
-        updatedData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-            "Content-Type":
-              "application/json",
-          },
-        }
-      );
+      await api.patch(`/organizations/${organization.id}`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-      alert(
-        "Organization Updated Successfully"
-      );
+      alert("Organization Updated Successfully");
 
       // ================= REFRESH =================
       if (fetchOrganizations) {
-
         fetchOrganizations();
       }
 
       // ================= CLOSE =================
       handleClose();
-
     } catch (err) {
+      console.log("UPDATE ERROR:", err.response?.data);
 
-      console.log(
-        "UPDATE ERROR:",
-        err.response?.data
-      );
-
-      alert(
-        err.response?.data?.detail ||
-        "Failed to update organization"
-      );
-
+      alert(err.response?.data?.detail || "Failed to update organization");
     } finally {
-
       setLoading(false);
     }
   };
 
   return (
-
-    <Modal
-      open={open}
-      onClose={handleClose}
-    >
-
+    <Modal open={open} onClose={handleClose}>
       <Box
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          transform:
-            "translate(-50%, -50%)",
+          transform: "translate(-50%, -50%)",
           width: 700,
           bgcolor: "white",
           borderRadius: 3,
@@ -182,10 +132,8 @@ export default function UpdateOrganization({
           outline: "none",
         }}
       >
-
         {/* HEADER */}
         <div className="flex items-center justify-between mb-6">
-
           <h1 className="text-3xl font-bold text-indigo-500">
             Update Organization
           </h1>
@@ -196,15 +144,10 @@ export default function UpdateOrganization({
           >
             <X size={28} />
           </button>
-
         </div>
 
         {/* FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-2 gap-4"
-        >
-
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           {/* NAME */}
           <input
             type="text"
@@ -237,19 +180,18 @@ export default function UpdateOrganization({
 
           {/* BUTTONS */}
           <div className="col-span-2 flex justify-end gap-3 mt-6">
-
             {/* RESET */}
-          
+
             <button
-  type="button"
-  onClick={() => {
-    resetForm();
-    handleClose();
-  }}
-  className="px-5 py-2 bg-red-500 text-white rounded-lg"
->
-  Cancel
-</button>
+              type="button"
+              onClick={() => {
+                resetForm();
+                handleClose();
+              }}
+              className="px-5 py-2 bg-red-500 text-white rounded-lg"
+            >
+              Cancel
+            </button>
 
             {/* UPDATE */}
             <button
@@ -257,19 +199,11 @@ export default function UpdateOrganization({
               disabled={loading}
               className="px-5 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
             >
-
-              {loading
-                ? "Updating..."
-                : "Update Organization"}
-
+              {loading ? "Updating..." : "Update Organization"}
             </button>
-
           </div>
-
         </form>
-
       </Box>
-
     </Modal>
   );
 }
