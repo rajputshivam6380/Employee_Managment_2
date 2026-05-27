@@ -35,6 +35,7 @@ class ProjectResponse(BaseModel):
 class UserMiniResponse(BaseModel):
     id: int
     name: str
+    email: str | None = None
 
     class Config:
         from_attributes = True

@@ -17,6 +17,10 @@ export default function RoleRedirect() {
         navigate("/dashboard/organizations", { replace: true });
         break;
 
+      case ROLES.HR_MANAGER:
+        navigate("/dashboard/admin-leaves", { replace: true });
+        break;
+
       case ROLES.EMPLOYEE:
         navigate("/dashboard/employee_home", { replace: true });
         break;

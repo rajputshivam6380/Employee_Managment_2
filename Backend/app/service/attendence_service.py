@@ -10,6 +10,8 @@ from app.models.attendance_model import Attendance, AttendanceStatus
 
 from app.models.attendance_model import Attendance
 
+from app.models.leave_model import Leave, LeaveStatus
+
 from app.models.project_model import Project, StatusEnum
 
 from typing import Optional
@@ -441,7 +443,7 @@ def get_organization_dashboard(db: Session, current_user):
         return {
             "cards": {
                 "total_employees": 0,
-                "daily_attendance_average": 0,
+                "daily_leaves": 0,
                 "total_projects": 0,
                 "assigned_project_count": 0,
             },
@@ -480,6 +482,17 @@ def get_organization_dashboard(db: Session, current_user):
     }
 
     daily_attendance_average = round((len(today_attended) * 100) / total_employees, 2)
+
+    daily_leaves = (
+        db.query(Leave)
+        .filter(
+            Leave.employee_id.in_(employee_ids),
+            Leave.status == LeaveStatus.approved,
+            Leave.start_date <= today,
+            Leave.end_date >= today,
+        )
+        .count()
+    )
 
     daily_attendance = []
 
@@ -614,6 +627,7 @@ def get_organization_dashboard(db: Session, current_user):
         "cards": {
             "total_employees": total_employees,
             "daily_attendance_average": daily_attendance_average,
+            "daily_leaves": daily_leaves,
             "total_projects": len(projects),
             "assigned_project_count": assigned_project_count,
         },
@@ -761,6 +775,8 @@ def get_employee_dashboard(db: Session, current_user):
 
     today_attendance = 100 if today_record else 0
 
+    total_leaves = db.query(Leave).filter(Leave.employee_id == employee_id).count()
+
     daily_attendance = []
 
     for index in range(6, -1, -1):
@@ -852,6 +868,7 @@ def get_employee_dashboard(db: Session, current_user):
         "cards": {
             "employee_name": employee.name,
             "attendance_today": today_attendance,
+            "total_leaves": total_leaves,
             "assigned_projects": len(projects),
             "department": (employee.department.value if employee.department else None),
         },

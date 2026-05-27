@@ -4,8 +4,8 @@ import {
   AlertCircle,
   BarChart3,
   Briefcase,
+  CalendarDays,
   ClipboardList,
-  TrendingUp,
   Users,
 } from "lucide-react";
 
@@ -40,7 +40,7 @@ const chartColors = [
 const emptyDashboard = {
   cards: {
     total_employees: 0,
-    daily_attendance_average: 0,
+    daily_leaves: 0,
     total_projects: 0,
     assigned_project_count: 0,
   },
@@ -92,9 +92,9 @@ export default function Dashboard() {
       bg: "bg-indigo-50",
     },
     {
-      title: "Daily Attendance Avg",
-      value: `${dashboard.cards.daily_attendance_average}%`,
-      icon: TrendingUp,
+      title: "Today's Leaves",
+      value: dashboard.cards.daily_leaves || 0,
+      icon: CalendarDays,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
     },

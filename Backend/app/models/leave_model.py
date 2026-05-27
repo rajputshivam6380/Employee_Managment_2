@@ -13,7 +13,7 @@ class LeaveType(str, enum.Enum):
     casual_leave = "Casual Leave"
     paid_leave = "Paid Leave"
     emergency_leave = "Emergency Leave"
-
+    
 
 # Leave Status Enum
 class LeaveStatus(str, enum.Enum):

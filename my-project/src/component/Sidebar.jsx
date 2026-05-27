@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 import {
   Building2,
@@ -11,18 +11,20 @@ import {
   ClipboardCheck,
   CalendarCheck,
   House,
+  CalendarRange,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { getStoredUser, ROLES } from "../utils/auth";
+import { getLeaveNotificationCount } from "../api/leaveApi";
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [leaveCount, setLeaveCount] = useState(0);
+  const location = useLocation();
 
   const user = getStoredUser();
-
-  console.log(user);
 
   const role = user?.role;
 
@@ -34,6 +36,53 @@ export default function Sidebar() {
         ? "bg-indigo-500 text-white shadow-md"
         : "text-gray-700 hover:bg-gray-100"
     }`;
+
+  const canShowLeaveCount = [
+    ROLES.EMPLOYEE,
+    ROLES.ORGANIZATION_ADMIN,
+    ROLES.HR_MANAGER,
+  ].includes(role);
+
+  const fetchLeaveCount = useCallback(async () => {
+    if (!canShowLeaveCount) {
+      setLeaveCount(0);
+      return;
+    }
+
+    try {
+      const response = await getLeaveNotificationCount();
+      setLeaveCount(Number(response.data?.count || 0));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [canShowLeaveCount]);
+
+  useEffect(() => {
+    fetchLeaveCount();
+  }, [fetchLeaveCount, location.pathname]);
+
+  useEffect(() => {
+    if (!canShowLeaveCount) return undefined;
+
+    const handleUpdate = () => fetchLeaveCount();
+    const intervalId = window.setInterval(fetchLeaveCount, 15000);
+
+    window.addEventListener("leave-notifications-updated", handleUpdate);
+    window.addEventListener("focus", handleUpdate);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("leave-notifications-updated", handleUpdate);
+      window.removeEventListener("focus", handleUpdate);
+    };
+  }, [canShowLeaveCount, fetchLeaveCount]);
+
+  const leaveBadge =
+    leaveCount > 0 ? (
+      <span className="ml-auto flex min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
+        {leaveCount > 99 ? "99+" : leaveCount}
+      </span>
+    ) : null;
 
   return (
     <aside
@@ -105,7 +154,7 @@ export default function Sidebar() {
           </NavLink>
         )}
 
-        {role !== ROLES.ORGANIZATION_ADMIN && (
+        {role === ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/attendance" className={navLinkClass}>
             <ClipboardCheck size={20} />
 
@@ -118,6 +167,26 @@ export default function Sidebar() {
             <CalendarCheck size={20} />
 
             {sidebarOpen && "All Attendence"}
+          </NavLink>
+        )}
+
+
+
+        {role === ROLES.EMPLOYEE && (
+          <NavLink to="/dashboard/leaves" className={navLinkClass}>
+            <CalendarRange size={20} />
+
+            {sidebarOpen && "My Leaves"}
+            {leaveBadge}
+          </NavLink>
+        )}
+
+        {[ROLES.ORGANIZATION_ADMIN, ROLES.HR_MANAGER].includes(role) && (
+          <NavLink to="/dashboard/admin-leaves" className={navLinkClass}>
+            <CalendarCheck size={20} />
+
+            {sidebarOpen && "All Leaves"}
+            {leaveBadge}
           </NavLink>
         )}
 

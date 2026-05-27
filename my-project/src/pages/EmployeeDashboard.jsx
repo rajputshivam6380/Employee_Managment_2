@@ -38,6 +38,7 @@ const emptyDashboard = {
     employee_name: "Employee",
     department: "N/A",
     attendance_today: 0,
+    total_leaves: 0,
     assigned_projects: 0,
   },
   daily_attendance: [],
@@ -47,15 +48,6 @@ const emptyDashboard = {
     in_progress: 0,
     completed: 0,
   },
-};
-
-const statusColor = {
-  present: "#22c55e",
-  complete: "#22c55e",
-  late: "#f97316",
-  half_day: "#eab308",
-  leave: "#8b5cf6",
-  absent: "#ef4444",
 };
 
 export default function EmployeeDashboard() {
@@ -102,8 +94,8 @@ export default function EmployeeDashboard() {
       bg: "bg-emerald-50",
     },
     {
-      title: "Today Attendance",
-      value: `${dashboard.cards.attendance_today}%`,
+      title: "Total Leaves",
+      value: dashboard.cards.total_leaves || 0,
       icon: CalendarCheck,
       color: "text-orange-600",
       bg: "bg-orange-50",

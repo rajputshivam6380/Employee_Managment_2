@@ -27,6 +27,8 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import LeavePage from "./pages/LeavePage";
+import AdminLeavePage from "./pages/AdminLeavePage";
 
 function App() {
   return (
@@ -63,6 +65,26 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[ROLES.ORGANIZATION_ADMIN]}>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="leaves"
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.EMPLOYEE]}>
+                <LeavePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="admin-leaves"
+            element={
+              <ProtectedRoute
+                allowedRoles={[ROLES.ORGANIZATION_ADMIN, ROLES.HR_MANAGER]}
+              >
+                <AdminLeavePage />
               </ProtectedRoute>
             }
           />
