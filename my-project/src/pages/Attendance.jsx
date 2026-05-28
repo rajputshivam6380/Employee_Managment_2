@@ -206,9 +206,13 @@ export default function Attendance({
 
   return (
     <div className={embedded ? "w-full" : "w-full px-3 py-2"}>
+
+            <div className="mb-6">
+          <h1 className="text-3xl font-bold text-indigo-600">My Attendence</h1>
+        </div>
       <div className="flex flex-wrap justify-end items-end gap-4 bg-white p-4 rounded-t-2xl shadow-sm border border-gray-200">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div className="w-[220px]">
+          <div className="w-full md:w-[220px]">
             <FormControl fullWidth>
               <InputLabel>Status</InputLabel>
               <Select
@@ -226,7 +230,7 @@ export default function Attendance({
             </FormControl>
           </div>
 
-          <div className="w-[220px]">
+          <div className="w-full md:w-[220px]">
             <DatePicker
               label="Start Date"
               value={startDate ? dayjs(startDate) : null}
@@ -240,7 +244,7 @@ export default function Attendance({
             />
           </div>
 
-          <div className="w-[220px]">
+          <div className="w-full md:w-[220px]">
             {/* <div className="w-full md:w-[220px]">
   <DatePicker
     label="End Date"
@@ -263,6 +267,8 @@ export default function Attendance({
 </div> */}
 
             <div className="w-full md:w-[220px]">
+
+         
               <DatePicker
                 label="End Date"
                 value={endDate ? dayjs(endDate) : null}
@@ -329,8 +335,8 @@ export default function Attendance({
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Clock3 size={18} />
+                      <div className="flex items-center gap-2 ">
+                        <Clock3 size={18} className="text-green-500"/>
                         {convertTo12Hour(
                           row.check_in
                             ? new Date(row.check_in).toTimeString().slice(0, 8)
@@ -341,7 +347,7 @@ export default function Attendance({
 
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Clock3 size={18} />
+                        <Clock3 size={18}  className="text-red-500"/>
                         {convertTo12Hour(
                           row.check_out
                             ? new Date(row.check_out).toTimeString().slice(0, 8)
