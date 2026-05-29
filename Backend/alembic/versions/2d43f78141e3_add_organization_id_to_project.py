@@ -1,8 +1,8 @@
 """add organization_id to project
 
-Revision ID: 3f5d756392d2
+Revision ID: 2d43f78141e3
 Revises: 
-Create Date: 2026-05-22 17:14:22.770724
+Create Date: 2026-05-29 10:26:43.296715
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3f5d756392d2'
+revision: str = '2d43f78141e3'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

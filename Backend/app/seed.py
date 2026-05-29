@@ -1,34 +1,54 @@
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.user import User
-from app.models.department_enum import DepartmentEnum
 from app.models.enums import RoleEnum
 from app.auth.utils import hash_password
+from fastapi import HTTPException
 
 
 def seed_default_user():
     db: Session = SessionLocal()
+
     try:
-        existing_user = db.query(User).filter(User.email == "admin@gmail.com").first()
+        users = [
+            {
+                "name": "Samyotech",
+                "email": "shivam.samyotech@gmail.com",
+                "phone": "9754731842",
+            },
+            {
+                "name": "Amazone",
+                "email": "amazone@gmail.com",
+                "phone": "9876543210",
+            },
+        ]
 
-        if existing_user:
-            print("User already exists")
-            return
+        for user_data in users:
 
-        default_user = User(
-            name="Samyotech",
-            email="shivam.samyotech@gmail.com",
-            password=hash_password("123456"),
-            phone="9754731842",
-            role=RoleEnum.ORGANIZATION_ADMIN,
-            is_active=True,
-            country_code="+91",
-        )
+            existing_user = (
+                db.query(User).filter(User.email == user_data["email"]).first()
+            )
 
-        db.add(default_user)
+            if existing_user:
+                print(f"{user_data['email']} already exists")
+                # raise HTTPException(status_code=404,detail="Email exists")
+                continue
+
+            new_user = User(
+                name=user_data["name"],
+                email=user_data["email"],
+                password=hash_password("123456"),
+                phone=user_data["phone"],
+                role=RoleEnum.ORGANIZATION_ADMIN,
+                is_active=True,
+                country_code="+91",
+            )
+
+            db.add(new_user)
+
         db.commit()
 
-        print("Default user created successfully")
+        print("Default users created successfully")
 
     except Exception as e:
         db.rollback()
