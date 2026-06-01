@@ -206,7 +206,12 @@ def get_all_users(db: Session, current_user):
     # SUPER ADMIN
     if current_role == RoleEnum.SUPER_ADMIN:
 
-        users = db.query(User).filter(User.role == RoleEnum.EMPLOYEE).all()
+        users = (
+            db.query(User)
+            .filter(User.role == RoleEnum.EMPLOYEE)
+            .order_by(User.id.asc())
+            .all()
+        )
 
     # ORGANIZATION ADMIN
     elif current_role == RoleEnum.ORGANIZATION_ADMIN:
@@ -217,6 +222,7 @@ def get_all_users(db: Session, current_user):
                 User.parent_id == current_user["user_id"],
                 User.role == RoleEnum.EMPLOYEE,
             )
+            .order_by(User.id.asc())
             .all()
         )
 
@@ -231,6 +237,7 @@ def get_all_users(db: Session, current_user):
                 User.role
                 == RoleEnum.EMPLOYEE
             )
+            .order_by(User.id.asc())
             .all()
         )
 
@@ -245,12 +252,18 @@ def get_all_users(db: Session, current_user):
                 User.department == current_user["department"],
                 User.role == RoleEnum.EMPLOYEE,
             )
+            .order_by(User.id.asc())
             .all()
         )
     # EMPLOYEE
     elif current_role == RoleEnum.EMPLOYEE:
 
-        users = db.query(User).filter(User.id == current_user["user_id"]).all()
+        users = (
+            db.query(User)
+            .filter(User.id == current_user["user_id"])
+            .order_by(User.id.asc())
+            .all()
+        )
 
     else:
         raise HTTPException(status_code=403, detail="Unauthorized")
@@ -513,7 +526,7 @@ def search_users(
 
         query = query.filter(User.department == department)
 
-    users = query.all()
+    users = query.order_by(User.id.asc()).all()
 
     today = date.today()
 

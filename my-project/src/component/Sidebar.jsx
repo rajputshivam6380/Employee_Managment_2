@@ -65,13 +65,11 @@ export default function Sidebar() {
     if (!canShowLeaveCount) return undefined;
 
     const handleUpdate = () => fetchLeaveCount();
-    const intervalId = window.setInterval(fetchLeaveCount, 15000);
 
     window.addEventListener("leave-notifications-updated", handleUpdate);
     window.addEventListener("focus", handleUpdate);
 
     return () => {
-      window.clearInterval(intervalId);
       window.removeEventListener("leave-notifications-updated", handleUpdate);
       window.removeEventListener("focus", handleUpdate);
     };
