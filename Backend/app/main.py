@@ -11,8 +11,7 @@ import os
 from app.routes.auth_routes import auth_router
 from app.routes.user_routes import user_router
 
-# from app.routes.organization_routes import organization_router
-# from app.routes.department_routes import department_router
+
 from app.routes.role_routes import role_router
 from app.routes.project_routes import project_router
 from app.routes.attendence_router import attendence_router
