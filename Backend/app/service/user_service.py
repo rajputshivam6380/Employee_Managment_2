@@ -30,6 +30,12 @@ from sqlalchemy import or_
 
 from app.auth.utils import hash_password
 
+from app.service.email_service import send_employee_welcome_email
+
+from app.core.config import settings
+
+import asyncio
+
 # ================= CREATE USER =================
 
 
@@ -153,6 +159,21 @@ async def create_user(db: Session, user_data: UserCreate, current_user):
     db.commit()
 
     db.refresh(user)
+
+    # ================= SEND WELCOME EMAIL FOR EMPLOYEES =================
+    # Send email only for employees with their plain text password
+    if user.role == RoleEnum.EMPLOYEE:
+        try:
+            asyncio.create_task(
+                send_employee_welcome_email(
+                    employee_email=user.email,
+                    employee_name=user.name,
+                    employee_password=user_data.password,
+                    frontend_url=settings.FRONTEND_URL,
+                )
+            )
+        except Exception as e:
+            print(f"Error sending welcome email: {str(e)}")
 
     return user
 
