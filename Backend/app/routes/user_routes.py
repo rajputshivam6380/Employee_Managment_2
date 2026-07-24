@@ -25,6 +25,8 @@ from app.service.user_service import (
     search_users,
 )
 
+from app.service.email_service import send_test_email
+
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
@@ -140,3 +142,27 @@ def employee_profile(current_user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Access denied")
 
     return current_user
+
+
+# ================= TEST EMAIL ENDPOINT =================
+
+
+@user_router.post("/test-email/{recipient_email}")
+async def test_email(
+    recipient_email: str,
+    current_user=Depends(get_current_user),
+):
+    """
+    Test email endpoint - sends a test email to verify SMTP configuration
+    Only accessible to authenticated users (mainly for admins to test)
+    """
+    try:
+        await send_test_email(recipient_email)
+        return {
+            "success": True,
+            "message": f"Test email sent successfully to {recipient_email}",
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to send test email: {str(e)}"
+        )
