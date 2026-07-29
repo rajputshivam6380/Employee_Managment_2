@@ -2,7 +2,7 @@ import axios from "axios";
 import { clearAuth } from "../utils/auth";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "http://localhost:8002",
 });
 
 api.interceptors.request.use((config) => {
