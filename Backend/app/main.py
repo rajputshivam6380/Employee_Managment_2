@@ -51,15 +51,17 @@ allowed_origins = [
     "http://localhost:5174",
     "http://localhost:5175",
     "http://localhost:8001",
+    "http://127.0.0.1:5173",
 ]
 
 frontend_url = os.getenv("FRONTEND_URL")
-if frontend_url:
+if frontend_url and frontend_url.rstrip("/") not in allowed_origins:
     allowed_origins.append(frontend_url.rstrip("/"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins if frontend_url else ["*"],
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
