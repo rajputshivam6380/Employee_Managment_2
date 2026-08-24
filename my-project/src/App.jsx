@@ -29,6 +29,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LeavePage from "./pages/LeavePage";
 import AdminLeavePage from "./pages/AdminLeavePage";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   return (
@@ -123,6 +124,14 @@ function App() {
                 allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ORGANIZATION_ADMIN]}
               >
                 <OrganizationDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="change-password"
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.EMPLOYEE]}>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />

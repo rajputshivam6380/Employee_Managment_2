@@ -14,6 +14,9 @@ from app.models.user import RoleEnum
 
 
 from app.models.user import User
+from app.auth.password import ChangePassword
+from app.auth.utils import hash_password, verify_password
+
 
 from app.service.user_service import (
     create_user,
@@ -90,6 +93,41 @@ def get_user(
 ):
 
     return get_user_by_id(user_id, db, current_user)
+
+
+
+@user_router.put("/change-password")
+def change_password(
+    data: ChangePassword,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    user = (
+        db.query(User)
+        .filter(User.id == current_user["user_id"])
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
+
+    if not verify_password(data.old_password, user.password):
+        raise HTTPException(
+            status_code=400,
+            detail="Old password is incorrect",
+        )
+
+    user.password = hash_password(data.new_password)
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Password changed successfully"
+    }
 
 
 # ================= UPDATE USER =================

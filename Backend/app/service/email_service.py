@@ -190,7 +190,7 @@ async def send_employee_welcome_email(
             </div>
             
             <div class="footer">
-                <p>© 2024 Employee Management System. All rights reserved.</p>
+                <p>© 2026 Employee Management System. All rights reserved.</p>
                 <p>This is an automated email. Please do not reply to this email.</p>
             </div>
         </div>
@@ -200,7 +200,7 @@ async def send_employee_welcome_email(
 
     # Render template
     template = Template(html_template)
-    login_url = f"{frontend_url}/login"
+    login_url = f"{frontend_url}/"
 
     html_content = template.render(
         employee_name=employee_name,

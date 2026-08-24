@@ -15,8 +15,8 @@ export const employeeValidationSchema = Yup.object({
   country_code: Yup.string().required("Country code is required"),
 
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .max(10, "Password must be at max 10 characters")
+    .min(4, "Password must be at least 6 characters")
+    .max(20, "Password must be at max 10 characters")
     .required("Password is required"),
 
   role: Yup.string().required("Role is required"),
