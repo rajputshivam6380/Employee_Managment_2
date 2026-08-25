@@ -19,7 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getStoredUser, ROLES } from "../utils/auth";
 import { getLeaveNotificationCount } from "../api/leaveApi";
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [leaveCount, setLeaveCount] = useState(0);
   const location = useLocation();
@@ -30,12 +30,18 @@ export default function Sidebar() {
 
   const sidebarTitle = user?.name?.trim() || "Dashboard";
 
+  // Auto close mobile drawer on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const navLinkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
       isActive
         ? "bg-indigo-500 text-white shadow-md"
         : "text-gray-700 hover:bg-gray-100"
     }`;
+
 
   const canShowLeaveCount = [
     ROLES.EMPLOYEE,
@@ -83,11 +89,21 @@ export default function Sidebar() {
     ) : null;
 
   return (
-    <aside
-      className={`h-screen bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 ${
-        sidebarOpen ? "w-64" : "w-20"
-      }`}
-    >
+    <>
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+        />
+      )}
+
+      <aside
+        className={`fixed md:relative z-50 h-screen bg-white shadow-xl md:shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 ${
+          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0"
+        } ${sidebarOpen ? "md:w-64" : "md:w-20"}`}
+      >
+
       <div className="p-4 bg-gray-100 flex flex-col items-center justify-center gap-2">
         <Link
           to="/dashboard"
@@ -206,5 +222,7 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }
+

@@ -247,8 +247,9 @@ export default function AdminLeavePage() {
           borderTop: 0,
         }}
       >
-        <TableContainer sx={{ maxHeight: 560 }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 560, overflowX: "auto" }}>
+          <Table stickyHeader sx={{ minWidth: 700 }}>
+
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700 }}>Employee</TableCell>

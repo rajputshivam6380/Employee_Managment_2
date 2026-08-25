@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { LogOut, UserRound, LogIn, LogOut as LogoutIcon } from "lucide-react";
+import { LogOut, UserRound, LogIn, LogOut as LogoutIcon, Menu } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -11,7 +11,8 @@ import api from "../apis/api";
 import { toast } from "react-toastify";
 import ThemeToggle from "./ThemeToggle";
 
-export default function Topbar() {
+export default function Topbar({ onMenuClick = () => {} }) {
+
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
@@ -100,14 +101,24 @@ export default function Topbar() {
 
   return (
     <>
-      <header className="h-24 bg-white border-b border-gray-200 px-6 flex items-center justify-between shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold text-indigo-600">
+      <header className="min-h-16 bg-white border-b border-gray-200 px-3 sm:px-6 py-3 flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="md:hidden p-2 rounded-xl text-gray-700 hover:bg-gray-100 focus:outline-none transition-colors"
+            title="Open Menu"
+          >
+            <Menu size={24} />
+          </button>
+
+          <h1 className="text-lg sm:text-2xl font-bold text-indigo-600 truncate">
             Employee Management
           </h1>
         </div>
 
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto flex-wrap sm:flex-nowrap">
+
           {isEmployee && (
             <div className="flex items-center gap-4 bg-gradient-to-r from-indigo-50 to-white border border-indigo-100 rounded-2xl px-5 py-3 shadow-sm">
               <div className="flex items-center gap-2">

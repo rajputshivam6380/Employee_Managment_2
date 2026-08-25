@@ -153,8 +153,9 @@ export default function OrgTable({ organizations = [], fetchOrganizations }) {
           borderRadius: "12px",
         }}
       >
-        <TableContainer sx={{ maxHeight: 500 }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 500, overflowX: "auto" }}>
+          <Table stickyHeader sx={{ minWidth: 700 }}>
+
             {/* TABLE HEAD */}
             <TableHead>
               <TableRow>

@@ -437,8 +437,9 @@ export default function EmpTable({
           borderRadius: "12px",
         }}
       >
-        <TableContainer sx={{ maxHeight: 500 }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 500, overflowX: "auto" }}>
+          <Table stickyHeader sx={{ minWidth: 700 }}>
+
             {/* TABLE HEAD */}
             <TableHead>
               <TableRow className="font-bold">

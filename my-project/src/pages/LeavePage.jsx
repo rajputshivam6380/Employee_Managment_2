@@ -354,8 +354,9 @@ export default function LeavePage() {
           border: "1px solid #e5e7eb",
         }}
       >
-        <TableContainer sx={{ maxHeight: 520 }}>
-          <Table stickyHeader>
+        <TableContainer sx={{ maxHeight: 520, overflowX: "auto" }}>
+          <Table stickyHeader sx={{ minWidth: 700 }}>
+
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700 }}>Type</TableCell>
