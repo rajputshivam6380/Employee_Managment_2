@@ -200,9 +200,13 @@ async def send_employee_welcome_email(
 
     # Render template
     template = Template(html_template)
-    target_frontend = frontend_url if (frontend_url and "localhost" not in frontend_url) else settings.FRONTEND_URL
-    clean_url = target_frontend.rstrip("/")
+    target_frontend = frontend_url or getattr(settings, "FRONTEND_URL", "")
+    if not target_frontend or "localhost" in str(target_frontend).lower():
+        target_frontend = "https://employee-managment-2-sqcf-3ubq3tb1c.vercel.app"
+
+    clean_url = str(target_frontend).rstrip("/")
     login_url = f"{clean_url}/"
+
 
     html_content = template.render(
         employee_name=employee_name,
