@@ -1,7 +1,16 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from sqlalchemy import and_, or_, cast, String
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
+
+# Indian Standard Time (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_now() -> datetime:
+    return datetime.now(IST).replace(tzinfo=None)
+
+def get_ist_today() -> date:
+    return datetime.now(IST).date()
 
 from app.models.user import User
 from app.models.enums import RoleEnum
@@ -32,7 +41,7 @@ def check_in_employee(db: Session, employee_id: int):
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    today = date.today()
+    today = get_ist_today()
 
     # CHECK ALREADY CHECKED IN
     existing_attendance = (
@@ -51,7 +60,7 @@ def check_in_employee(db: Session, employee_id: int):
             status_code=400, detail="Attendance already marked for today"
         )
 
-    current_time = datetime.now()
+    current_time = get_ist_now()
 
     check_in_time = current_time.time()
 
@@ -107,7 +116,7 @@ def check_in_employee(db: Session, employee_id: int):
 # ==========================================
 def check_out_employee(db: Session, employee_id: int):
 
-    today = date.today()
+    today = get_ist_today()
 
     attendance = (
         db.query(Attendance)
@@ -126,7 +135,7 @@ def check_out_employee(db: Session, employee_id: int):
     if attendance.check_out:
         raise HTTPException(status_code=400, detail="Already checked out")
 
-    current_time = datetime.now()
+    current_time = get_ist_now()
 
     attendance.check_out = current_time
 
@@ -206,7 +215,7 @@ def get_attendence_by_date(db: Session, attendance_date: date):
 # ==========================================
 def get_today_attendance_status(db: Session, employee_id: int):
 
-    today = date.today()
+    today = get_ist_today()
 
     attendance = (
         db.query(Attendance)
@@ -424,7 +433,7 @@ def get_organization_dashboard(db: Session, current_user):
             status_code=403, detail="Only organization admin can see dashboard"
         )
 
-    today = date.today()
+    today = get_ist_today()
     month_start = today.replace(day=1)
     analytics_start = min(month_start, today - timedelta(days=34))
     admin_id = current_user["user_id"]
@@ -734,7 +743,7 @@ def get_employee_dashboard(db: Session, current_user):
 
     employee_id = current_user["user_id"]
 
-    today = date.today()
+    today = get_ist_today()
 
     month_start = today.replace(day=1)
 

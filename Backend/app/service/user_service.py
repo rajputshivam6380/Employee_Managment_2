@@ -14,6 +14,7 @@ from app.schemas.user_schema import UserCreate, UserUpdate
 from app.models.attendance_model import Attendance, AttendanceStatus
 
 from datetime import datetime, date
+from app.service.attendence_service import get_ist_today
 
 from sqlalchemy import and_, cast, String, or_, func
 
@@ -236,7 +237,7 @@ def get_all_users(db: Session, current_user):
 
     current_role = current_user["role"]
 
-    today = date.today()
+    today = get_ist_today()
 
     # SUPER ADMIN
     if current_role == RoleEnum.SUPER_ADMIN:
@@ -572,6 +573,6 @@ def search_users(
 
     users = query.order_by(User.id.asc()).all()
 
-    today = date.today()
+    today = get_ist_today()
 
     return [build_user_attendance_response(user, db, today) for user in users]

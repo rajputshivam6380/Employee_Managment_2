@@ -188,20 +188,9 @@ export default function Attendance({
     return `${hrs} hrs ${mins} mins`;
   };
 
-  const convertTo12Hour = (timeStr) => {
-    if (!timeStr) return "N/A";
-
-    const [h, m] = timeStr.split(":");
-    let hour = parseInt(h, 10);
-
-    if (isNaN(hour)) return "N/A";
-
-    const ampm = hour >= 12 ? "PM" : "AM";
-
-    hour = hour % 12;
-    hour = hour ? hour : 12;
-
-    return `${hour}:${m} ${ampm}`;
+  const formatTime = (value) => {
+    if (!value) return "-";
+    return dayjs(value).format("hh:mm A");
   };
 
   return (
@@ -335,24 +324,16 @@ export default function Attendance({
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex items-center gap-2 ">
+                      <div className="flex items-center gap-2">
                         <Clock3 size={18} className="text-green-500"/>
-                        {convertTo12Hour(
-                          row.check_in
-                            ? new Date(row.check_in).toTimeString().slice(0, 8)
-                            : null,
-                        )}
+                        {formatTime(row.check_in)}
                       </div>
                     </TableCell>
 
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Clock3 size={18}  className="text-red-500"/>
-                        {convertTo12Hour(
-                          row.check_out
-                            ? new Date(row.check_out).toTimeString().slice(0, 8)
-                            : null,
-                        )}
+                        <Clock3 size={18} className="text-red-500"/>
+                        {formatTime(row.check_out)}
                       </div>
                     </TableCell>
 
