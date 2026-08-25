@@ -98,6 +98,4 @@ def run_seed():
 
 
 
-@app.get("/")
-def health():
-    return {"Health":"Health is done"}
+
