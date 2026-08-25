@@ -76,9 +76,28 @@ def home():
 @app.get("/seed")
 def run_seed():
     try:
+        from app.database import SessionLocal
+        from app.models.user import User
+        from app.core.config import settings
+
         seed_default_user()
-        return {"message": "Database seeded successfully!"}
+        db = SessionLocal()
+        users = db.query(User).all()
+        user_emails = [u.email for u in users]
+        db_scheme = settings.DATABASE_URL.split(":")[0] if settings.DATABASE_URL else "none"
+        db.close()
+        return {
+            "message": "Database seeded successfully!",
+            "db_scheme": db_scheme,
+            "user_count": len(users),
+            "users": user_emails,
+        }
     except Exception as e:
         return {"message": "Seeding error", "error": str(e)}
 
 
+
+
+@app.get("/")
+def health():
+    return {"Health":"Health is done"}
