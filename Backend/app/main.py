@@ -66,14 +66,25 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-# GLOBAL EXCEPTION HANDLER (Preserves CORS headers on internal errors)
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import HTTPException as FastAPIHTTPException
+
+
+# GLOBAL EXCEPTION HANDLER (Preserves CORS headers & status_code for HTTP exceptions)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, (FastAPIHTTPException, StarletteHTTPException)):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+        )
+
     print("🔥 Global Error Caught:", str(exc))
     return JSONResponse(
         status_code=500,
         content={"message": "Internal Server Error", "detail": str(exc)},
     )
+
 
 
 
