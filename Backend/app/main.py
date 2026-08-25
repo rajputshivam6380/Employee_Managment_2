@@ -31,13 +31,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# AUTO CREATE TABLES & SEED DATA IF NOT EXISTS (for Cloud DB / Neon / Supabase)
-try:
-    Base.metadata.create_all(bind=engine)
-    seed_default_user()
-    print("✅ Database tables and seed data initialized successfully")
-except Exception as e:
-    print("⚠️ Could not create database tables/seed data on startup:", str(e))
+# AUTO CREATE TABLES & SEED DATA IF NOT EXISTS (on startup)
+@app.on_event("startup")
+def startup_db_init():
+    try:
+        Base.metadata.create_all(bind=engine)
+        seed_default_user()
+        print("✅ Database tables and seed data initialized successfully")
+    except Exception as e:
+        print("⚠️ Could not create database tables/seed data on startup:", str(e))
+
 
 
 # SAFE UPLOADS DIRECTORY CREATION & MOUNTING (Handles read-only filesystem on Vercel)
