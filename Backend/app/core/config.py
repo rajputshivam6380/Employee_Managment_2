@@ -38,7 +38,8 @@ class Settings:
     MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME", "Employee Management System")
     SMTP_USE_TLS = os.getenv("SMTP_USE_TLS", "true").lower() == "true"
     SMTP_USE_SSL = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
-    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "https://employee-managment-2-sqcf-3ubq3tb1c.vercel.app")
+
 
 
 settings = Settings()

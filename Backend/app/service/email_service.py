@@ -200,7 +200,9 @@ async def send_employee_welcome_email(
 
     # Render template
     template = Template(html_template)
-    login_url = f"{frontend_url}/"
+    target_frontend = frontend_url if (frontend_url and "localhost" not in frontend_url) else settings.FRONTEND_URL
+    clean_url = target_frontend.rstrip("/")
+    login_url = f"{clean_url}/"
 
     html_content = template.render(
         employee_name=employee_name,
@@ -208,6 +210,7 @@ async def send_employee_welcome_email(
         employee_password=employee_password,
         login_url=login_url,
     )
+
 
     # Create message
     message = MessageSchema(
