@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import api from "../apis/api";
+import api, { API_BASE_URL } from "../apis/api";
+
 import { FolderKanban, CalendarDays, Users, Clock3 } from "lucide-react";
 // import AttachFileIcon from "@mui/icons-material/AttachFile";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -166,11 +166,12 @@ export default function AssignedProject() {
                       />
 
                       <a
-                        href={`http://localhost:8000/${project.file_path}`}
+                        href={`${API_BASE_URL}/${project.file_path}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-indigo-600 font-medium hover:underline"
                       >
+
                         Open Attachment
                       </a>
                     </div>

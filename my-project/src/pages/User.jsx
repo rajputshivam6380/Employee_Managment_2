@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../apis/api";
 import { useEffect, useState } from "react";
 
 function User() {
@@ -6,22 +6,13 @@ function User() {
 
   const getUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        "http://localhost:8000/super_admin/get_super_admin",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
+      const res = await api.get("/super_admin/get_super_admin");
       setUsers(res.data);
     } catch (err) {
       console.log("ERROR:", err.response?.data || err.message);
     }
   };
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");

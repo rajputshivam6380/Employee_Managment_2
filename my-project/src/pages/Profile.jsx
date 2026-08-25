@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import { Mail, ShieldCheck } from "lucide-react";
-
-import api from "../apis/api";
+import api, { API_BASE_URL } from "../apis/api";
 import { formatRole, ROLES, saveAuth } from "../utils/auth";
 import { Phone } from "lucide-react";
 import { KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -75,9 +73,10 @@ export default function Profile() {
                 profile.photo
                   ? profile.photo.startsWith("http")
                     ? profile.photo
-                    : `http://localhost:8000${profile.photo}`
+                    : `${API_BASE_URL}${profile.photo}`
                   : "https://img.pikbest.com/png-images/20241128/man-avatar-3d-icon-isolated-on-transparent-background-_11144108.png!sw800"
               }
+
               alt="profile"
               className="w-28 h-28 rounded-full border-4 border-white object-cover shadow-lg"
             />

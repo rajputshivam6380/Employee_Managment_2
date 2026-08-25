@@ -19,8 +19,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddEmployee from "../pages/AddEmployee";
 import UpdateEmployee from "../pages/UpdateEmployee";
 
-import api from "../apis/api";
+import api, { API_BASE_URL } from "../apis/api";
 import { getStoredUser, ROLES } from "../utils/auth";
+
 
 import { Eye } from "lucide-react";
 import { FilePenLine } from "lucide-react";
@@ -484,9 +485,10 @@ export default function EmpTable({
                             emp.photo
                               ? emp.photo.startsWith("http")
                                 ? emp.photo
-                                : `http://localhost:8000${emp.photo}`
+                                : `${API_BASE_URL}${emp.photo}`
                               : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                           }
+
                           alt="profile"
                           className="w-11 h-11 rounded-full object-cover border"
                         />

@@ -11,7 +11,7 @@ import {
 
 import Attendance from "./Attendance";
 
-import api from "../apis/api";
+import api, { API_BASE_URL } from "../apis/api";
 import { formatRole } from "../utils/auth";
 
 const profileImage = (photo) => {
@@ -19,8 +19,9 @@ const profileImage = (photo) => {
     return "https://cdn-icons-png.flaticon.com/512/149/149071.png";
   }
 
-  return photo.startsWith("http") ? photo : `http://localhost:8000${photo}`;
+  return photo.startsWith("http") ? photo : `${API_BASE_URL}${photo}`;
 };
+
 
 const DetailCard = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

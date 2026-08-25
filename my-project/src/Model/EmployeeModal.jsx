@@ -9,6 +9,8 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
+import api, { API_BASE_URL } from "../apis/api";
+
 export default function EmployeeModal({ employee }) {
   const navigate = useNavigate();
 
@@ -46,9 +48,10 @@ export default function EmployeeModal({ employee }) {
                 employee.photo
                   ? employee.photo.startsWith("http")
                     ? employee.photo
-                    : `http://localhost:8000${employee.photo}`
+                    : `${API_BASE_URL}${employee.photo}`
                   : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
               }
+
               alt="profile"
               className="w-36 h-36 rounded-full object-cover border-4 border-indigo-500 shadow-md"
             />
