@@ -49,10 +49,13 @@ def seed_default_user():
         db.commit()
 
         print("Default users created successfully")
+        return True
 
     except Exception as e:
         db.rollback()
         print("Error while seeding:", e)
+        raise e
 
     finally:
         db.close()
+
