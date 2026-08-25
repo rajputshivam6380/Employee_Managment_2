@@ -47,28 +47,15 @@ app.include_router(project_router)
 app.include_router(attendence_router)
 app.include_router(leave_router)
 
-# CORS CONFIGURATION
-allowed_origins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "http://localhost:8001",
-    "https://employee-managment-2-sqcf-one.vercel.app",
-]
-
-frontend_url = os.getenv("FRONTEND_URL")
-if frontend_url:
-    clean_url = frontend_url.rstrip("/")
-    if clean_url not in allowed_origins:
-        allowed_origins.append(clean_url)
-
+# CORS CONFIGURATION (Allows all origins including Vercel preview & production deployments)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins if frontend_url else ["*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # VALIDATION ERROR
