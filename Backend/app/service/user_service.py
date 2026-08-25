@@ -473,11 +473,20 @@ def delete_user(user_id: int, db: Session, current_user):
 
         raise HTTPException(status_code=403, detail="Unauthorized")
 
-    db.delete(user)
+    try:
+        # Reset parent_id for any users managed by this user
+        db.query(User).filter(User.parent_id == user.id).update({"parent_id": None})
 
-    db.commit()
+        db.delete(user)
+        db.commit()
+        return {"message": "User deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        print("❌ Error deleting user:", str(e))
+        raise HTTPException(
+            status_code=500, detail=f"Could not delete user: {str(e)}"
+        )
 
-    return {"message": "User deleted successfully"}
 
 
 # ================= CURRENT USER PROFILE =================

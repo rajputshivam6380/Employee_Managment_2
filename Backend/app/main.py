@@ -66,6 +66,17 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
+# GLOBAL EXCEPTION HANDLER (Preserves CORS headers on internal errors)
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print("🔥 Global Error Caught:", str(exc))
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error", "detail": str(exc)},
+    )
+
+
+
 # HOME ROUTE
 @app.get("/")
 def home():
