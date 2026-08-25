@@ -61,9 +61,12 @@ app.add_middleware(
 # VALIDATION ERROR
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    first_error = exc.errors()[0]["msg"] if exc.errors() else "Invalid input"
     return JSONResponse(
-        status_code=400, content={"message": "Invalid input", "errors": exc.errors()}
+        status_code=400,
+        content={"detail": f"Validation Error: {first_error}", "errors": exc.errors()},
     )
+
 
 
 from starlette.exceptions import HTTPException as StarletteHTTPException

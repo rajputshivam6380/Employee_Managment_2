@@ -41,7 +41,15 @@ import asyncio
 
 async def create_user(db: Session, user_data: UserCreate, current_user):
 
-    current_role = current_user["role"]
+    raw_role = current_user.get("role")
+    if isinstance(raw_role, str):
+        try:
+            current_role = RoleEnum(raw_role.lower())
+        except ValueError:
+            current_role = raw_role
+    else:
+        current_role = raw_role
+
 
     # ================= EMPLOYEE BLOCK =================
 
