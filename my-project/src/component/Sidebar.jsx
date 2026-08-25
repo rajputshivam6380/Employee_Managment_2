@@ -37,6 +37,8 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
   const navLinkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+      sidebarOpen ? "" : "justify-center"
+    } ${
       isActive
         ? "bg-indigo-500 text-white shadow-md"
         : "text-gray-700 hover:bg-gray-100"
@@ -81,12 +83,23 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
     };
   }, [canShowLeaveCount, fetchLeaveCount]);
 
-  const leaveBadge =
-    leaveCount > 0 ? (
-      <span className="ml-auto flex min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-bold leading-none text-white">
+  const renderLeaveBadge = (isCollapsed) => {
+    if (leaveCount <= 0) return null;
+
+    if (isCollapsed) {
+      return (
+        <span className="absolute -top-1.5 -right-2.5 flex min-w-4 h-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white z-10">
+          {leaveCount > 99 ? "99+" : leaveCount}
+        </span>
+      );
+    }
+
+    return (
+      <span className="ml-auto flex min-w-5 h-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold leading-none text-white shrink-0">
         {leaveCount > 99 ? "99+" : leaveCount}
       </span>
-    ) : null;
+    );
+  };
 
   return (
     <>
@@ -109,7 +122,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
           to="/dashboard"
           className="p-4 bg-gray-100 hover:bg-indigo-50 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300"
         >
-          <Building className="text-orange-500" size={32} />
+          <Building className="text-orange-500 shrink-0" size={32} />
 
           {sidebarOpen && (
             <h1 className="text-2xl font-bold text-indigo-600 text-center">
@@ -122,7 +135,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
       <nav className="flex-1 flex flex-col p-4 gap-3">
         {role === ROLES.ORGANIZATION_ADMIN && (
           <NavLink to="/dashboard/home" className={navLinkClass}>
-            <House size={20} />
+            <House size={20} className="shrink-0" />
 
             {sidebarOpen && "Dashboard"}
           </NavLink>
@@ -130,7 +143,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/employee_home" className={navLinkClass}>
-            <House size={20} />
+            <House size={20} className="shrink-0" />
 
             {sidebarOpen && "Dashboard"}
           </NavLink>
@@ -138,7 +151,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role !== ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/employees" className={navLinkClass}>
-            <Users size={20} />
+            <Users size={20} className="shrink-0" />
 
             {sidebarOpen && "Employees"}
           </NavLink>
@@ -146,7 +159,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.ORGANIZATION_ADMIN && (
           <NavLink to="/dashboard/assign-project" className={navLinkClass}>
-            <FolderKanban size={20} />
+            <FolderKanban size={20} className="shrink-0" />
 
             {sidebarOpen && "Tasks"}
           </NavLink>
@@ -154,7 +167,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/projects" className={navLinkClass}>
-            <FolderKanban size={20} />
+            <FolderKanban size={20} className="shrink-0" />
 
             {sidebarOpen && "Tasks"}
           </NavLink>
@@ -162,7 +175,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.SUPER_ADMIN && (
           <NavLink to="/dashboard/organizations" className={navLinkClass}>
-            <Building2 size={20} />
+            <Building2 size={20} className="shrink-0" />
 
             {sidebarOpen && "Organizations"}
           </NavLink>
@@ -170,7 +183,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/attendance" className={navLinkClass}>
-            <ClipboardCheck size={20} />
+            <ClipboardCheck size={20} className="shrink-0" />
 
             {sidebarOpen && "Attendence"}
           </NavLink>
@@ -178,7 +191,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.ORGANIZATION_ADMIN && (
           <NavLink to="/dashboard/attendance/all" className={navLinkClass}>
-            <CalendarCheck size={20} />
+            <CalendarCheck size={20} className="shrink-0" />
 
             {sidebarOpen && "All Attendence"}
           </NavLink>
@@ -188,25 +201,31 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
 
         {role === ROLES.EMPLOYEE && (
           <NavLink to="/dashboard/leaves" className={navLinkClass}>
-            <CalendarRange size={20} />
+            <div className="relative flex items-center justify-center">
+              <CalendarRange size={20} className="shrink-0" />
+              {!sidebarOpen && renderLeaveBadge(true)}
+            </div>
 
-            {sidebarOpen && "My Leaves"}
-            {leaveBadge}
+            {sidebarOpen && <span>My Leaves</span>}
+            {sidebarOpen && renderLeaveBadge(false)}
           </NavLink>
         )}
 
         {[ROLES.ORGANIZATION_ADMIN, ROLES.HR_MANAGER].includes(role) && (
           <NavLink to="/dashboard/admin-leaves" className={navLinkClass}>
-            <CalendarCheck size={20} />
+            <div className="relative flex items-center justify-center">
+              <CalendarCheck size={20} className="shrink-0" />
+              {!sidebarOpen && renderLeaveBadge(true)}
+            </div>
 
-            {sidebarOpen && "All Leaves"}
-            {leaveBadge}
+            {sidebarOpen && <span>All Leaves</span>}
+            {sidebarOpen && renderLeaveBadge(false)}
           </NavLink>
         )}
 
         {/* ================= PROFILE ================= */}
         <NavLink to="/dashboard/profile" className={navLinkClass}>
-          <UserRound size={20} />
+          <UserRound size={20} className="shrink-0" />
 
           {sidebarOpen && "Profile"}
         </NavLink>
