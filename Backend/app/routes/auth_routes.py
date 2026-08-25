@@ -3,6 +3,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+
 
 from app.database import get_db
 
@@ -48,15 +50,20 @@ def add_organization_admin(data: UserCreate, db: Session = Depends(get_db)):
 def login(data: LoginSchema, db: Session = Depends(get_db)):
 
     # ================= FIND USER =================
-    user = db.query(User).filter(User.email == data.email).first()
+    clean_email = data.email.strip().lower() if data.email else ""
+    user = (
+        db.query(User)
+        .filter(func.lower(User.email) == clean_email)
+        .first()
+    )
 
     # ================= EMAIL CHECK =================
     if not user:
-        raise HTTPException(status_code=404, detail="Invalid email")
+        raise HTTPException(status_code=400, detail="Invalid email or password")
 
     # ================= PASSWORD CHECK =================
     if not verify_password(data.password, user.password):
-        raise HTTPException(status_code=400, detail="Invalid password")
+        raise HTTPException(status_code=400, detail="Invalid email or password")
 
     # ================= ACTIVE CHECK =================
     if not user.is_active:
@@ -70,14 +77,13 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
         "access_token": token,
         "token_type": "bearer",
         "user": {
-            #     "id": user.id,
-            #     "name": user.name,
-            #     "email": user.email,
-            #     # IMPORTANT
-            #     "role": user.role,
-            #     # ADD THESE FOR EMPLOYEE LOGIN
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
             "department": user.department,
             "parent_id": user.parent_id,
             "is_active": user.is_active,
         },
     }
+

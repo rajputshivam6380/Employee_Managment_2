@@ -50,12 +50,13 @@ async def create_user(db: Session, user_data: UserCreate, current_user):
         raise HTTPException(status_code=403, detail="Employees cannot create users")
 
     # ================= EMAIL CHECK =================
-
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    clean_email = user_data.email.strip().lower() if user_data.email else ""
+    existing_user = db.query(User).filter(func.lower(User.email) == clean_email).first()
 
     if existing_user:
 
         raise HTTPException(status_code=400, detail="Email already exists")
+
 
     # ================= ROLE ACCESS =================
 
@@ -144,8 +145,9 @@ async def create_user(db: Session, user_data: UserCreate, current_user):
 
     user = User(
         name=user_data.name,
-        email=user_data.email,
+        email=clean_email,
         password=hashed_password,
+
         # hash_password(user_data.password),
         phone=user_data.phone,
         role=user_data.role,
