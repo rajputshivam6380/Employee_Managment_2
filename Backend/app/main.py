@@ -10,6 +10,7 @@ import os
 
 from app.database import Base, engine
 import app.models  # Import all models so Base.metadata knows about them
+from app.seed import seed_default_user
 
 from app.routes.auth_routes import auth_router
 from app.routes.user_routes import user_router
@@ -20,12 +21,14 @@ from app.routes.leave_routes import leave_router
 
 app = FastAPI(title="Employee Management System")
 
-# AUTO CREATE TABLES IF THEY DON'T EXIST (for Cloud DB / Neon / Supabase)
+# AUTO CREATE TABLES & SEED DATA IF NOT EXISTS (for Cloud DB / Neon / Supabase)
 try:
     Base.metadata.create_all(bind=engine)
-    print("✅ Database tables initialized successfully")
+    seed_default_user()
+    print("✅ Database tables and seed data initialized successfully")
 except Exception as e:
-    print("⚠️ Could not create database tables on startup:", str(e))
+    print("⚠️ Could not create database tables/seed data on startup:", str(e))
+
 
 # SAFE UPLOADS DIRECTORY CREATION & MOUNTING (Handles read-only filesystem on Vercel)
 uploads_dir = "/tmp/uploads" if os.getenv("VERCEL") else "uploads"
@@ -80,4 +83,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.get("/")
 def home():
     return {"message": "Employee Management System Backend Running Successfully!"}
+
+
+# SEED DATA ROUTE
+@app.get("/seed")
+def run_seed():
+    try:
+        seed_default_user()
+        return {"message": "Database seeded successfully!"}
+    except Exception as e:
+        return {"message": "Seeding error", "error": str(e)}
+
 
