@@ -15,18 +15,8 @@ from app.models.attendance_model import Attendance, AttendanceStatus
 
 from datetime import datetime, date
 
-from sqlalchemy import and_
+from sqlalchemy import and_, cast, String, or_, func
 
-from sqlalchemy import cast, String
-
-
-from typing import Optional
-
-from fastapi import Depends
-
-from app.database import get_db
-
-from sqlalchemy import or_
 
 from app.auth.utils import hash_password
 
