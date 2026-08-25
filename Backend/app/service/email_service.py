@@ -225,7 +225,12 @@ async def send_employee_welcome_email(
     )
 
     # Send email
-    await fastmail.send_message(message)
+    try:
+        await fastmail.send_message(message)
+        print(f"✅ Welcome email sent successfully to {employee_email}")
+    except Exception as e:
+        print(f"⚠️ SMTP error while sending welcome email to {employee_email}: {str(e)}")
+
 
 
 async def send_test_email(recipient_email: str):

@@ -170,16 +170,20 @@ async def create_user(db: Session, user_data: UserCreate, current_user):
     # ================= SEND WELCOME EMAIL FOR EMPLOYEES =================
     if user.role == RoleEnum.EMPLOYEE:
         try:
-            await send_employee_welcome_email(
-                employee_email=user.email,
-                employee_name=user.name,
-                employee_password=user_data.password,
-                frontend_url=settings.FRONTEND_URL,
+            await asyncio.wait_for(
+                send_employee_welcome_email(
+                    employee_email=user.email,
+                    employee_name=user.name,
+                    employee_password=user_data.password,
+                    frontend_url=settings.FRONTEND_URL,
+                ),
+                timeout=3.0,
             )
         except Exception as e:
-            print(f"⚠️ Error sending welcome email: {str(e)}")
+            print(f"⚠️ Welcome email task error/timeout: {str(e)}")
 
     return user
+
 
 
 
