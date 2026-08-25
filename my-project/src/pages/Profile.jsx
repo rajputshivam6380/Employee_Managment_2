@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
+import { Mail, ShieldCheck, Phone, KeyRound } from "lucide-react";
 import api, { API_BASE_URL } from "../apis/api";
 import { formatRole, ROLES, saveAuth } from "../utils/auth";
-import { Phone } from "lucide-react";
-import { KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
 
 
 export default function Profile() {
