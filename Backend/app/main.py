@@ -21,6 +21,16 @@ from app.routes.leave_routes import leave_router
 
 app = FastAPI(title="Employee Management System")
 
+# CORS CONFIGURATION (Must be added BEFORE routes and endpoints)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=".*",
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # AUTO CREATE TABLES & SEED DATA IF NOT EXISTS (for Cloud DB / Neon / Supabase)
 try:
     Base.metadata.create_all(bind=engine)
@@ -47,14 +57,6 @@ app.include_router(project_router)
 app.include_router(attendence_router)
 app.include_router(leave_router)
 
-# CORS CONFIGURATION (Allows all origins including Vercel preview & production deployments)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 
