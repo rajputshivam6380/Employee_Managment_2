@@ -156,28 +156,31 @@ async def create_user(db: Session, user_data: UserCreate, current_user):
         parent_id=parent_id,
     )
 
-    db.add(user)
-
-    db.commit()
-
-    db.refresh(user)
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except Exception as e:
+        db.rollback()
+        print("❌ Error creating user in DB:", str(e))
+        raise HTTPException(
+            status_code=400, detail=f"Could not create user: {str(e)}"
+        )
 
     # ================= SEND WELCOME EMAIL FOR EMPLOYEES =================
-    # Send email only for employees with their plain text password
     if user.role == RoleEnum.EMPLOYEE:
         try:
-            asyncio.create_task(
-                send_employee_welcome_email(
-                    employee_email=user.email,
-                    employee_name=user.name,
-                    employee_password=user_data.password,
-                    frontend_url=settings.FRONTEND_URL,
-                )
+            await send_employee_welcome_email(
+                employee_email=user.email,
+                employee_name=user.name,
+                employee_password=user_data.password,
+                frontend_url=settings.FRONTEND_URL,
             )
         except Exception as e:
-            print(f"Error sending welcome email: {str(e)}")
+            print(f"⚠️ Error sending welcome email: {str(e)}")
 
     return user
+
 
 
 # ================= GET ALL USERS =================
