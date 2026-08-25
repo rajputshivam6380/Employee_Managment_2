@@ -1,6 +1,4 @@
-from fastapi import FastAPI
-from app.main import app as backend_app
+from app.main import app
 
-app = FastAPI()
-
-app.mount("/api", backend_app)
+# Vercel Serverless Entry Point
+__all__ = ["app"]

@@ -8,17 +8,30 @@ load_dotenv()
 
 class Settings:
 
-    DATABASE_URL = os.getenv("DATABASE_URL")
+    _raw_db_url = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+    if _raw_db_url and _raw_db_url.startswith("postgres://"):
+        _raw_db_url = _raw_db_url.replace("postgres://", "postgresql://", 1)
 
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    DATABASE_URL = _raw_db_url
 
-    ALGORITHM = os.getenv("ALGORITHM")
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
 
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
+    _expire = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440")
+    try:
+        ACCESS_TOKEN_EXPIRE_MINUTES = int(_expire)
+    except (ValueError, TypeError):
+        ACCESS_TOKEN_EXPIRE_MINUTES = 1440
 
     # Email Settings
     SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-    SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+    _smtp_port = os.getenv("SMTP_PORT", "587")
+    try:
+        SMTP_PORT = int(_smtp_port)
+    except (ValueError, TypeError):
+        SMTP_PORT = 587
+
     SMTP_USERNAME = os.getenv("SMTP_USERNAME")
     SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
     MAIL_FROM_ADDRESS = os.getenv("MAIL_FROM_ADDRESS")
@@ -29,3 +42,4 @@ class Settings:
 
 
 settings = Settings()
+
